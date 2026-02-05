@@ -14,7 +14,7 @@
         <el-col :span="8">
           <el-card class="profile-card">
             <div class="profile-avatar">
-              <AvatarUpload 
+              <AvatarUpload
                 v-model="profileForm.profile.avatar"
                 :size="120"
                 :editable="true"
@@ -80,7 +80,6 @@
                       placeholder="介绍一下自己..."
                     />
                   </el-form-item>
-<!-- TODO 头像没有在表单中更新 -->
                   <el-form-item>
                     <el-button
                       type="primary"
@@ -317,12 +316,9 @@ const loadUserData = async () => {
           avatar: user.value.profile?.avatar || ''
         }
       }
-      
+
       console.log('Profile form avatar:', profileForm.value.profile.avatar)
 
-      // TODO: 加载用户统计数据
-      // TODO: 加载用户历史记录
-      // TODO: 加载用户评分记录
     } else {
       throw new Error(result.error?.message || '加载失败')
     }
