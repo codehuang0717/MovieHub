@@ -1,0 +1,4 @@
+/backend/venv/
+/backend/venv/Lib/
+/backend/venv/Scripts/
+/backend/venv/pyvenv.cfg

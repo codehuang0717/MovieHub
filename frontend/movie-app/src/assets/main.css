@@ -1,0 +1,195 @@
+@import './base.css';
+
+#app {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    display: block;
+  }
+
+  #app {
+    display: block;
+    padding: 0;
+  }
+}
+
+/* Dark theme for Element Plus components */
+:root {
+  --el-bg-color: #0d1117;
+  --el-bg-color-overlay: #161b22;
+  --el-bg-color-page: #0d1117;
+  --el-text-color-primary: #f0f6fc;
+  --el-text-color-regular: #c9d1d9;
+  --el-text-color-secondary: #8b949e;
+  --el-text-color-placeholder: #6e7681;
+  --el-border-color: #30363d;
+  --el-border-color-light: #21262d;
+  --el-border-color-lighter: #161b22;
+  --el-border-color-extra-light: #0d1117;
+  --el-border-color-dark: #484f58;
+  --el-border-color-darker: #6e7681;
+  --el-fill-color: #161b22;
+  --el-fill-color-light: #21262d;
+  --el-fill-color-lighter: #30363d;
+  --el-fill-color-extra-light: #484f58;
+  --el-fill-color-dark: #0d1117;
+  --el-fill-color-darker: #010409;
+  --el-fill-color-blank: transparent;
+}
+
+/* Element Plus skeleton dark theme */
+.el-skeleton {
+  background: #0d1117 !important;
+}
+
+.el-skeleton__item {
+  background: #21262d !important;
+  background-image: linear-gradient(90deg, #21262d 25%, #30363d 50%, #21262d 75%) !important;
+}
+
+/* Element Plus loading dark theme */
+.el-loading-mask {
+  background-color: rgba(13, 17, 23, 0.8) !important;
+}
+
+.el-loading-spinner .path {
+  stroke: #58a6ff !important;
+}
+
+/* Element Plus pagination dark theme */
+.el-pagination {
+  --el-pagination-button-bg-color: #161b22 !important;
+  --el-pagination-hover-color: #58a6ff !important;
+  --el-pagination-text-color: #f0f6fc !important;
+}
+
+/* Element Plus input dark theme */
+.el-input {
+  --el-input-bg-color: #161b22 !important;
+  --el-input-text-color: #f0f6fc !important;
+  --el-input-border-color: #30363d !important;
+  --el-input-hover-border-color: #58a6ff !important;
+  --el-input-focus-border-color: #58a6ff !important;
+}
+
+/* Element Plus select dark theme */
+.el-select {
+  --el-select-input-color: #f0f6fc !important;
+  --el-select-input-font-size: 14px !important;
+  --el-select-background-color: #161b22 !important;
+  --el-select-border-color-hover: #58a6ff !important;
+  --el-select-border-color: #30363d !important;
+  --el-select-color: #f0f6fc !important;
+}
+
+.el-select-dropdown {
+  background-color: #161b22 !important;
+  border-color: #30363d !important;
+}
+
+.el-select-dropdown__item {
+  color: #f0f6fc !important;
+}
+
+.el-select-dropdown__item:hover {
+  background-color: #30363d !important;
+}
+
+.el-select-dropdown__item.selected {
+  background-color: #58a6ff !important;
+  color: #fff !important;
+}
+
+/* Element Plus radio dark theme */
+.el-radio {
+  --el-radio-text-color: #f0f6fc !important;
+}
+
+.el-radio__label {
+  color: #f0f6fc !important;
+}
+
+.el-radio.is-checked .el-radio__label {
+  color: #58a6ff !important;
+  font-weight: 600 !important;
+}
+
+/* Element Plus button dark theme */
+.el-button {
+  --el-button-bg-color: #161b22 !important;
+  --el-button-border-color: #30363d !important;
+  --el-button-text-color: #f0f6fc !important;
+}
+
+.el-button:hover {
+  --el-button-hover-bg-color: #30363d !important;
+  --el-button-hover-border-color: #58a6ff !important;
+  --el-button-hover-text-color: #f0f6fc !important;
+}
+
+.el-button--primary {
+  --el-button-bg-color: #58a6ff !important;
+  --el-button-border-color: #58a6ff !important;
+  --el-button-text-color: #ffffff !important;
+}
+
+/* Element Plus tag dark theme */
+.el-tag {
+  --el-tag-bg-color: #161b22 !important;
+  --el-tag-border-color: #30363d !important;
+  --el-tag-text-color: #f0f6fc !important;
+}
+
+.el-tag--primary {
+  --el-tag-bg-color: #58a6ff !important;
+  --el-tag-border-color: #58a6ff !important;
+  --el-tag-text-color: #ffffff !important;
+}
+
+/* Element Plus message dark theme */
+.el-message {
+  --el-message-bg-color: #161b22 !important;
+  --el-message-border-color: #30363d !important;
+  --el-message-text-color: #f0f6fc !important;
+}
+
+/* Element Plus empty state dark theme */
+.el-empty {
+  --el-empty-description-color: #8b949e !important;
+}
+
+/* Element Plus result dark theme */
+.el-result {
+  --el-result-title-color: #f0f6fc !important;
+  --el-result-subtitle-color: #8b949e !important;
+}
+
+/* Ensure body has dark background */
+body {
+  background-color: #0d1117 !important;
+  color: #f0f6fc !important;
+}
+
+html {
+  background-color: #0d1117 !important;
+  color: #f0f6fc !important;
+}

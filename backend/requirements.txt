@@ -1,0 +1,39 @@
+# Django Core
+Django                       ==            5.2.10
+django-cors-headers          ==            4.9.0
+django-filter                 ==           25.2
+djangorestframework             ==         3.16.1
+djangorestframework_simplejwt  ==          5.5.1
+
+# Database
+Pillow==9.5.0
+
+# Authentication & Security
+PyJWT==2.10.1
+cryptography==46.0.3
+
+# Development & Debugging
+django-extensions==3.2.3
+
+# File Handling & Media
+python-decouple==3.8
+whitenoise==6.7.0
+
+# HTTP & API Client
+requests==2.31.0
+urllib3==2.6.3
+
+# Date & Time
+python-dateutil==2.9.0.post0
+pytz==2025.2
+
+# JSON Processing
+jsonschema==4.25.1
+
+
+# Additional Utilities
+python-dotenv==1.2.1
+click==8.1.7
+tqdm==4.66.4
+
+django-debug-toolbar==6.2.0
