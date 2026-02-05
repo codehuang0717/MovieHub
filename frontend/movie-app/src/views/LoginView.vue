@@ -11,15 +11,14 @@
       <div class="back-home">
         <router-link to="/" class="back-link">
           <el-icon><ArrowLeft /></el-icon>
-          返回首页
+          {{ $t('common.back') }}
         </router-link>
       </div>
 
-      <!-- Login Form -->
       <div class="login-form">
         <div class="form-header">
-          <h1 class="form-title">登录</h1>
-          <p class="form-subtitle">欢迎回到MovieHub</p>
+          <h1 class="form-title">{{ $t('auth.login') }}</h1>
+          <p class="form-subtitle">{{ $t('auth.welcomeBack') }}</p>
         </div>
 
         <el-form 
@@ -33,7 +32,7 @@
           <el-form-item prop="username">
             <el-input 
               v-model="loginForm.username" 
-              placeholder="请输入用户名"
+              :placeholder="$t('auth.username')"
               prefix-icon="User"
             />
           </el-form-item>
@@ -42,7 +41,7 @@
             <el-input 
               v-model="loginForm.password" 
               type="password" 
-              placeholder="请输入密码"
+              :placeholder="$t('auth.password')"
               prefix-icon="Lock"
               show-password
             />
@@ -55,35 +54,34 @@
               @click="handleLogin"
               class="login-button"
             >
-              登录
+              {{ $t('auth.login') }}
             </el-button>
           </el-form-item>
         </el-form>
 
         <div class="form-footer">
           <p class="test-hint">
-            💡 测试账号：用户名 <code>test</code> 密码 <code>test123</code>
+            {{ $t('auth.testAccount') }}: username <code>test</code> password <code>test123</code>
           </p>
           <p>
-            还没有账号？
-            <router-link to="/register" class="register-link">立即注册</router-link>
+            {{ $t('auth.noAccount') }}
+            <router-link to="/register" class="register-link">{{ $t('auth.registerNow') }}</router-link>
           </p>
         </div>
       </div>
 
-      <!-- Additional Links -->
       <div class="login-features">
         <div class="feature-item">
           <el-icon><Star /></el-icon>
-          <span>海量电影资源</span>
+          <span>{{ $t('auth.featureMovies') }}</span>
         </div>
         <div class="feature-item">
           <el-icon><VideoPlay /></el-icon>
-          <span>个性化推荐</span>
+          <span>{{ $t('auth.featureRecommendations') }}</span>
         </div>
         <div class="feature-item">
           <el-icon><ChatDotRound /></el-icon>
-          <span>社区评论互动</span>
+          <span>{{ $t('auth.featureCommunity') }}</span>
         </div>
       </div>
     </div>
@@ -93,11 +91,13 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { ArrowLeft, Star, VideoPlay, ChatDotRound } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 
+const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
@@ -112,12 +112,12 @@ const loginForm = reactive({
 
 const loginRules = {
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, message: '用户名至少3个字符', trigger: 'blur' }
+    { required: true, message: t('auth.username') + t('errors.required'), trigger: 'blur' },
+    { min: 3, message: t('auth.username') + t('errors.minLength') + '3', trigger: 'blur' }
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码至少6个字符', trigger: 'blur' }
+    { required: true, message: t('auth.password') + t('errors.required'), trigger: 'blur' },
+    { min: 6, message: t('auth.password') + t('errors.minLength') + '6', trigger: 'blur' }
   ]
 }
 
@@ -131,16 +131,15 @@ const handleLogin = async () => {
     const result = await authStore.login(loginForm)
     
     if (result.success) {
-      ElMessage.success('登录成功')
+      ElMessage.success(t('auth.loginSuccess'))
       
-      // 如果有重定向地址，跳转到指定页面
       const redirect = route.query.redirect as string
       router.push(redirect || { name: 'home' })
     } else {
       const errorMsg = result.error.non_field_errors?.[0] || 
-                     result.error.username?.[0] || 
-                     result.error.password?.[0] || 
-                     '登录失败，请检查用户名和密码'
+                      result.error.username?.[0] || 
+                      result.error.password?.[0] || 
+                      t('auth.loginFailed')
       ElMessage.error(errorMsg)
     }
   } catch (error) {
@@ -151,7 +150,6 @@ const handleLogin = async () => {
 }
 
 onMounted(() => {
-  // 如果已经登录，跳转到首页
   if (authStore.isAuthenticated) {
     router.push({ name: 'home' })
   }

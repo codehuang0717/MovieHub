@@ -5,8 +5,22 @@ import router from '@/router'
 
 const API_BASE_URL = 'http://localhost:8000/api/auth'
 
+interface UserProfile {
+  avatar: string
+  bio?: string
+}
+
+interface User {
+  id: number
+  username: string
+  email: string
+  first_name?: string
+  last_name?: string
+  profile?: UserProfile
+}
+
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref(null)
+  const user = ref<User | null>(null)
   const accessToken = ref(localStorage.getItem('accessToken') || '')
   const refreshToken = ref(localStorage.getItem('refreshToken') || '')
 

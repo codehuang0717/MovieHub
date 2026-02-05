@@ -2,27 +2,27 @@
   <AppLayout>
     <div class="watchlist-view">
       <div class="page-header">
-        <h1>我的想看列表</h1>
+        <h1>{{ $t('watchlist.myWatchlist') }}</h1>
         <div class="watchlist-stats">
-          <el-tag type="primary">{{ watchlistStats.total }} 部电影</el-tag>
-          <el-tag type="success">{{ watchlistStats.watching }} 部在看</el-tag>
-          <el-tag type="info">{{ watchlistStats.watched }} 部已看</el-tag>
+          <el-tag type="primary">{{ $t('watchlist.totalMovies', { count: watchlistStats.total }) }}</el-tag>
+          <el-tag type="success">{{ $t('watchlist.watchingCount', { count: watchlistStats.watching }) }}</el-tag>
+          <el-tag type="info">{{ $t('watchlist.watchedCount', { count: watchlistStats.watched }) }}</el-tag>
         </div>
       </div>
 
       <div class="filters">
         <el-radio-group v-model="statusFilter" @change="filterWatchlist">
-          <el-radio-button label="all">全部</el-radio-button>
-          <el-radio-button label="want_to_watch">想看</el-radio-button>
-          <el-radio-button label="watching">在看</el-radio-button>
-          <el-radio-button label="watched">已看</el-radio-button>
+          <el-radio-button label="all">{{ $t('watchlist.statusAll') }}</el-radio-button>
+          <el-radio-button label="want_to_watch">{{ $t('watchlist.statusWantToWatch') }}</el-radio-button>
+          <el-radio-button label="watching">{{ $t('watchlist.statusWatching') }}</el-radio-button>
+          <el-radio-button label="watched">{{ $t('watchlist.statusWatched') }}</el-radio-button>
         </el-radio-group>
 
-        <el-select v-model="sortBy" placeholder="排序方式" @change="filterWatchlist">
-          <el-option label="添加时间" value="created_at"></el-option>
-          <el-option label="更新时间" value="updated_at"></el-option>
-          <el-option label="电影评分" value="rating"></el-option>
-          <el-option label="上映时间" value="release_date"></el-option>
+        <el-select v-model="sortBy" :placeholder="$t('watchlist.sortBy')" @change="filterWatchlist">
+          <el-option :label="$t('watchlist.sortByDateAdded')" value="created_at"></el-option>
+          <el-option :label="$t('watchlist.sortByUpdated')" value="updated_at"></el-option>
+          <el-option :label="$t('watchlist.sortByRating')" value="rating"></el-option>
+          <el-option :label="$t('watchlist.sortByReleaseDate')" value="release_date"></el-option>
         </el-select>
       </div>
 
@@ -31,14 +31,14 @@
       </div>
 
       <div v-else-if="error" class="error">
-        <el-alert title="加载失败" :description="error" type="error" show-icon />
+        <el-alert :title="$t('errors.loadFailed')" :description="error" type="error" show-icon />
       </div>
 
       <div v-else class="watchlist-content">
         <div v-if="filteredWatchlist.length === 0" class="no-results">
-          <el-empty description="暂无相关电影">
+          <el-empty :description="$t('watchlist.noMovies')">
             <el-button type="primary" @click="router.push({ name: 'movies' })">
-              浏览电影
+              {{ $t('watchlist.browseMovies') }}
             </el-button>
           </el-empty>
         </div>
@@ -54,7 +54,7 @@
                     <el-icon>
                       <Picture />
                     </el-icon>
-                    <span>暂无海报</span>
+                    <span>{{ $t('movie.noPoster') }}</span>
                   </div>
                   <div class="status-badge" :class="`status-${item.status}`">
                     <el-tag :type="getStatusType(item.status)" size="small">
@@ -79,23 +79,23 @@
                 <div class="watchlist-actions">
                   <el-dropdown @command="(command) => handleAction(command, item)" @click.stop>
                     <el-button size="small" text>
-                      状态 <el-icon>
+                      {{ $t('watchlist.status') }} <el-icon>
                         <ArrowDown />
                       </el-icon>
                     </el-button>
                     <template #dropdown>
                       <el-dropdown-menu>
                         <el-dropdown-item command="want_to_watch">
-                          想看
+                          {{ $t('watchlist.statusWantToWatch') }}
                         </el-dropdown-item>
                         <el-dropdown-item command="watching">
-                          在看
+                          {{ $t('watchlist.statusWatching') }}
                         </el-dropdown-item>
                         <el-dropdown-item command="watched">
-                          已看
+                          {{ $t('watchlist.statusWatched') }}
                         </el-dropdown-item>
                         <el-dropdown-item command="remove" divided>
-                          移除
+                          {{ $t('watchlist.remove') }}
                         </el-dropdown-item>
                       </el-dropdown-menu>
                     </template>
@@ -113,11 +113,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useWatchlistStore } from '@/stores/watchlist'
 import { Picture, ArrowDown, Star } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import AppLayout from '@/layouts/AppLayout.vue'
 
+const { t } = useI18n()
 const router = useRouter()
 const watchlistStore = useWatchlistStore()
 
@@ -219,10 +221,10 @@ const getStatusType = (status: string) => {
 
 const getStatusText = (status: string) => {
   switch (status) {
-    case 'want_to_watch': return '想看'
-    case 'watching': return '在看'
-    case 'watched': return '已看'
-    default: return '未知'
+    case 'want_to_watch': return t('watchlist.statusWantToWatch')
+    case 'watching': return t('watchlist.statusWatching')
+    case 'watched': return t('watchlist.statusWatched')
+    default: return t('common.unknown')
   }
 }
 
@@ -239,23 +241,22 @@ const handleImageError = (event: Event) => {
 const updateWatchlistStatus = async (watchlistId: number, status: string) => {
   try {
     await watchlistStore.updateWatchlistStatus(watchlistId, status)
-    ElMessage.success(`状态已更新为: ${getStatusText(status)}`)
+    ElMessage.success(t('watchlist.statusUpdated', { status: getStatusText(status) }))
     
-    // 状态更新后重新加载整个想看列表以确保数据完整性
     setTimeout(async () => {
       await loadWatchlist()
     }, 500)
   } catch (error) {
-    ElMessage.error('更新状态失败')
+    ElMessage.error(t('watchlist.updateStatusFailed'))
   }
 }
 
 const removeFromWatchlist = async (item: any) => {
   try {
     await watchlistStore.removeFromWatchlist(item.id)
-    ElMessage.success(`已从想看列表移除: ${getMovieTitle(item)}`)
+    ElMessage.success(t('watchlist.removedFromWatchlist', { title: getMovieTitle(item) }))
   } catch (error) {
-    ElMessage.error('移除失败')
+    ElMessage.error(t('watchlist.removeFailed'))
   }
 }
 

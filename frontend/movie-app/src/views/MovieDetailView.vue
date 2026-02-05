@@ -8,9 +8,9 @@
 
       <!-- Error State -->
       <div v-else-if="!movie" class="error-container">
-        <el-result icon="error" title="加载失败" sub-title="无法获取电影信息">
+        <el-result icon="error" :title="$t('errors.loadFailed')" :sub-title="$t('errors.loadMovieFailed')">
           <template #extra>
-            <el-button type="primary" @click="router.push('/movies')">返回电影列表</el-button>
+            <el-button type="primary" @click="router.push('/movies')">{{ $t('movie.backToList') }}</el-button>
           </template>
         </el-result>
       </div>
@@ -33,7 +33,7 @@
                 class="back-button"
                 :icon="ArrowLeft"
               >
-                返回
+                {{ $t('common.back') }}
               </el-button>
             </div>
             
@@ -52,7 +52,7 @@
                     <el-icon><Star /></el-icon>
                     {{ movie.vote_average?.toFixed(1) }} / 10
                   </span>
-                  <span class="movie-votes">{{ formatNumber(movie.vote_count) }} 票</span>
+                  <span class="movie-votes">{{ t('movieDetail.voteCount', { count: formatNumber(movie.vote_count) }) }}</span>
                   <span class="movie-date">{{ formatDate(movie.release_date) }}</span>
                   <span class="movie-runtime">{{ formatRuntime(movie.runtime) }}</span>
                 </div>
@@ -65,13 +65,13 @@
 
                 <div class="movie-actions">
                   <el-button type="primary" size="large" @click="addToWatchlist">
-                    <el-icon><Plus /></el-icon> 加入想看
+                    <el-icon><Plus /></el-icon> {{ $t('home.addToWatchlist') }}
                   </el-button>
                   <el-button size="large" @click="addToCollection">
-                    <el-icon><Collection /></el-icon> 收藏
+                    <el-icon><Collection /></el-icon> {{ $t('collections.myCollections') }}
                   </el-button>
                   <el-button size="large" @click="rateMovie">
-                    <el-icon><Star /></el-icon> 评分
+                    <el-icon><Star /></el-icon> {{ $t('review.rating') }}
                   </el-button>
                 </div>
               </div>
@@ -83,22 +83,22 @@
         <div class="content-container">
           <!-- Overview -->
           <section class="content-section">
-            <h3>剧情简介</h3>
+            <h3>{{ $t('movie.overview') }}</h3>
             <p class="movie-overview">{{ movie.overview }}</p>
           </section>
 
           <!-- Ratings -->
           <section class="content-section ratings-section">
             <div class="ratings-header">
-              <h3>评分与口碑</h3>
+              <h3>{{ $t('review.ratingsAndReviews') }}</h3>
               <div class="ratings-summary">
                 <div class="average-score">
                   <div class="score-value">{{ formatAverage(ratingStats?.average_rating) }}</div>
-                  <div class="score-label">综合评分</div>
+                  <div class="score-label">{{ $t('review.overallRating') }}</div>
                 </div>
                 <div class="score-meta">
-                  <div class="score-count">{{ ratingStats?.total_ratings || 0 }} 人评分</div>
-                  <div class="score-tip">基于社区评分统计</div>
+                  <div class="score-count">{{ ratingStats?.total_ratings || 0 }} {{ $t('review.peopleRated') }}</div>
+                  <div class="score-tip">{{ $t('review.basedOnStats') }}</div>
                 </div>
               </div>
             </div>
@@ -106,7 +106,7 @@
             <div class="ratings-body">
               <div class="rating-distribution">
                 <div v-for="star in [5, 4, 3, 2, 1]" :key="star" class="rating-row">
-                  <span class="rating-star">{{ star }} 星</span>
+                  <span class="rating-star">{{ star }} {{ $t('review.star') }}</span>
                   <div class="rating-bar">
                     <div class="rating-bar-fill" :style="{ width: `${getRatingPercent(star)}%` }"></div>
                   </div>
@@ -115,7 +115,7 @@
               </div>
 
               <div class="user-rating-card">
-                <div class="user-rating-title">我的评分</div>
+                <div class="user-rating-title">{{ $t('review.myRating') }}</div>
                 <el-rate
                   v-model="userRatingInput"
                   :max="5"
@@ -123,10 +123,10 @@
                   @change="submitUserRating"
                 />
                 <div v-if="!authStore.isAuthenticated" class="user-rating-hint">
-                  登录后可评分与评论
+                  {{ $t('review.loginToRate') }}
                 </div>
                 <div v-else class="user-rating-hint">
-                  {{ userRatingId ? '已评分，可继续调整' : '点击星级提交评分' }}
+                  {{ userRatingId ? $t('review.alreadyRated') : $t('review.rateAndComment') }}
                 </div>
               </div>
             </div>
@@ -135,8 +135,8 @@
           <!-- Comments -->
           <section class="content-section comments-section">
             <div class="comments-header">
-              <h3>评论</h3>
-              <span class="comments-count">{{ comments.length }} 条</span>
+              <h3>{{ $t('review.comments') }}</h3>
+              <span class="comments-count">{{ comments.length }} {{ $t('review.items') }}</span>
             </div>
 
             <div v-if="authStore.isAuthenticated" class="comment-form">
@@ -146,21 +146,21 @@
                 :rows="4"
                 maxlength="2000"
                 show-word-limit
-                placeholder="写下你的观影感受吧..."
+                :placeholder="$t('review.writeFeelings')"
               />
               <div class="comment-actions">
                 <el-switch
                   v-model="commentForm.is_long_review"
-                  active-text="长评"
-                  inactive-text="短评"
+                  :active-text="$t('review.longReview')"
+                  :inactive-text="$t('review.shortReview')"
                 />
                 <el-button type="primary" :loading="commentSubmitting" @click="submitComment">
-                  发布评论
+                  {{ $t('review.submitReview') }}
                 </el-button>
               </div>
             </div>
             <div v-else class="comment-login-hint">
-              登录后可参与评分与评论
+              {{ $t('review.loginToRate') }}
             </div>
 
             <div class="comments-list" v-loading="commentsLoading">
@@ -185,7 +185,7 @@
                     </div>
                   </div>
                   <div class="comment-tags">
-                    <el-tag v-if="comment.is_long_review" size="small" type="warning">长评</el-tag>
+                    <el-tag v-if="comment.is_long_review" size="small" type="warning">{{ $t('review.longReview') }}</el-tag>
                     <el-button text size="small" @click="toggleLike(comment)">
                       <el-icon><Pointer /></el-icon>
                       {{ comment.likes_count || 0 }}
@@ -197,7 +197,7 @@
                       type="danger"
                       @click="removeComment(comment)"
                     >
-                      删除
+                      {{ $t('review.delete') }}
                     </el-button>
                   </div>
                 </div>
@@ -206,13 +206,13 @@
             </div>
 
             <div v-if="!commentsLoading && comments.length === 0" class="comments-empty">
-              <el-empty description="还没有评论，来写下第一条吧" />
+              <el-empty :description="$t('review.beFirstToComment')" />
             </div>
           </section>
 
           <!-- Cast -->
           <section class="content-section" v-if="movie.cast && movie.cast.length > 0">
-            <h3>主演阵容</h3>
+            <h3>{{ $t('movie.cast') }}</h3>
             <div class="cast-grid">
               <div
                 v-for="person in movie.cast.slice(0, 8)"
@@ -240,34 +240,34 @@
 
           <!-- Additional Info -->
           <section class="content-section">
-            <h3>电影信息</h3>
+            <h3>{{ $t('movieDetail.movieInfo') }}</h3>
             <div class="movie-details">
               <div class="detail-row">
-                <span class="detail-label">导演：</span>
+                <span class="detail-label">{{ $t('movieDetail.director') }}：</span>
                 <span class="detail-value">
                   {{ getDirectors().map(d => d.name).join(', ') }}
                 </span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">编剧：</span>
+                <span class="detail-label">{{ $t('movieDetail.writer') }}：</span>
                 <span class="detail-value">
                   {{ getWriters().map(w => w.name).join(', ') }}
                 </span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">制片国家：</span>
-                <span class="detail-value">{{ movie.production_countries?.map(c => c.name).join(', ') || '未知' }}</span>
+                <span class="detail-label">{{ $t('movieDetail.productionCountries') }}：</span>
+                <span class="detail-value">{{ movie.production_countries?.map(c => c.name).join(', ') || t('common.unknown') }}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">制片公司：</span>
-                <span class="detail-value">{{ movie.production_companies?.map(c => c.name).join(', ') || '未知' }}</span>
+                <span class="detail-label">{{ $t('movieDetail.productionCompanies') }}：</span>
+                <span class="detail-value">{{ movie.production_companies?.map(c => c.name).join(', ') || t('common.unknown') }}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">预算：</span>
+                <span class="detail-label">{{ $t('movieDetail.budget') }}：</span>
                 <span class="detail-value">{{ formatCurrency(movie.budget) }}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">票房：</span>
+                <span class="detail-label">{{ $t('movieDetail.revenue') }}：</span>
                 <span class="detail-value">{{ formatCurrency(movie.revenue) }}</span>
               </div>
             </div>
@@ -275,7 +275,7 @@
 
           <!-- Recommended Movies -->
           <section class="content-section">
-            <h3>为你推荐</h3>
+            <h3>{{ $t('home.recommendations') }}</h3>
             <div class="recommended-movies">
               <div
                 v-for="movie in similarMovies"
@@ -299,13 +299,13 @@
           </section>
         </div>
 
-        <el-dialog v-model="collectionDialogVisible" title="添加到收藏夹" width="520px">
+        <el-dialog v-model="collectionDialogVisible" :title="$t('collection.addToCollection')" width="520px">
           <div v-if="collectionStore.loading" class="dialog-loading">
             <el-skeleton :rows="3" animated />
           </div>
           <div v-else class="collection-dialog">
             <div v-if="collectionStore.collections.length === 0" class="collection-empty">
-              <el-empty description="暂无收藏夹" />
+              <el-empty :description="$t('collection.noCollections')" />
             </div>
             <div v-else class="collection-list">
               <div
@@ -316,38 +316,38 @@
                 <div class="collection-option-info">
                   <div class="collection-option-title">{{ collection.name }}</div>
                   <div class="collection-option-meta">
-                    {{ collection.movies_count || 0 }} 部电影
+                    {{ $t('collection.moviesInCollection', { count: collection.movies_count || 0 }) }}
                   </div>
                 </div>
                 <el-button size="small" @click="addMovieToCollection(collection)">
-                  添加
+                  {{ $t('collection.add') }}
                 </el-button>
               </div>
             </div>
 
             <div class="collection-create">
-              <div class="collection-create-title">新建收藏夹</div>
-              <el-input v-model="newCollectionForm.name" placeholder="收藏夹名称" />
+              <div class="collection-create-title">{{ $t('collection.createNewCollection') }}</div>
+              <el-input v-model="newCollectionForm.name" :placeholder="$t('collection.collectionTitle')" />
               <el-input
                 v-model="newCollectionForm.description"
                 type="textarea"
                 :rows="2"
-                placeholder="简单描述（可选）"
+                :placeholder="$t('collection.collectionDesc')"
               />
               <div class="collection-create-actions">
                 <el-switch
                   v-model="newCollectionForm.is_public"
-                  active-text="公开"
-                  inactive-text="私密"
+                  :active-text="$t('collection.public')"
+                  :inactive-text="$t('collection.private')"
                 />
                 <el-button type="primary" :loading="collectionCreating" @click="createAndAddToCollection">
-                  创建并添加
+                  {{ $t('collection.createAndAdd') }}
                 </el-button>
               </div>
             </div>
           </div>
           <template #footer>
-            <el-button @click="collectionDialogVisible = false">关闭</el-button>
+            <el-button @click="collectionDialogVisible = false">{{ $t('collection.close') }}</el-button>
           </template>
         </el-dialog>
       </div>
@@ -358,6 +358,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useTMDBStore } from '@/stores/tmdb'
 import { useWatchlistStore } from '@/stores/watchlist'
@@ -367,6 +368,7 @@ import { User, Star, Collection, Plus, ArrowLeft, Pointer } from '@element-plus/
 import { ElMessage, ElMessageBox } from 'element-plus'
 import AppLayout from '@/layouts/AppLayout.vue'
 
+const { t, locale } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
@@ -397,6 +399,10 @@ const newCollectionForm = reactive({
   is_public: false
 })
 
+watch(locale, () => {
+  loadMovieData()
+})
+
 const goBack = () => {
   // Use router.back() to go to the previous page with preserved state
   router.back()
@@ -412,7 +418,7 @@ const handleImageError = (event: Event) => {
 }
 
 const formatDate = (dateString: string) => {
-  if (!dateString) return '未知'
+  if (!dateString) return t('common.unknown')
   return new Date(dateString).toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: 'long',
@@ -421,10 +427,10 @@ const formatDate = (dateString: string) => {
 }
 
 const formatRuntime = (minutes: number) => {
-  if (!minutes) return '未知'
+  if (!minutes) return t('common.unknown')
   const hours = Math.floor(minutes / 60)
   const mins = minutes % 60
-  return `${hours}小时${mins}分钟`
+  return t('movieDetail.runtimeMinutes', { minutes: hours * 60 + mins })
 }
 
 const formatNumber = (num: number) => {
@@ -433,7 +439,7 @@ const formatNumber = (num: number) => {
 }
 
 const formatCurrency = (amount: number) => {
-  if (!amount || amount === 0) return '未知'
+  if (!amount || amount === 0) return t('common.unknown')
   return new Intl.NumberFormat('zh-CN', {
     style: 'currency',
     currency: 'USD',
@@ -448,7 +454,7 @@ const formatAverage = (value: number | null) => {
 }
 
 const formatDateTime = (dateString: string) => {
-  if (!dateString) return '未知'
+  if (!dateString) return t('common.unknown')
   return new Date(dateString).toLocaleString('zh-CN', {
     year: 'numeric',
     month: 'short',
@@ -483,13 +489,13 @@ const getWriters = () => {
 
 const addToWatchlist = async () => {
   if (!authStore.isAuthenticated) {
-    ElMessage.warning('请先登录')
+    ElMessage.warning(t('movie.pleaseLoginFirst'))
     router.push('/login')
     return
   }
 
   if (!movie.value) {
-    ElMessage.warning('电影数据未加载')
+    ElMessage.warning(t('movie.loadDataFailed'))
     return
   }
 
@@ -499,19 +505,19 @@ const addToWatchlist = async () => {
     console.log('Add to watchlist result:', result)
 
     if (result.added) {
-      ElMessage.success('已将《' + movie.value?.title + '》加入想看列表')
+      ElMessage.success(t('movie.addedToWatchlist', { title: movie.value?.title }))
     } else {
-      ElMessage.info('《' + movie.value?.title + '》已从想看列表中移除')
+      ElMessage.info(t('movie.removedFromWatchlist', { title: movie.value?.title }))
     }
   } catch (error: any) {
     console.error('Add to watchlist error:', error)
-    ElMessage.error('操作失败，请重试')
+    ElMessage.error(t('movie.operationFailed'))
   }
 }
 
 const addToCollection = () => {
   if (!authStore.isAuthenticated) {
-    ElMessage.warning('请先登录')
+    ElMessage.warning(t('movie.pleaseLoginFirst'))
     router.push('/login')
     return
   }
@@ -524,7 +530,7 @@ const addToCollection = () => {
 
 const rateMovie = () => {
   if (!authStore.isAuthenticated) {
-    ElMessage.warning('请先登录')
+    ElMessage.warning(t('movie.pleaseLoginFirst'))
     router.push('/login')
     return
   }
@@ -565,13 +571,13 @@ const loadRatings = async () => {
 
 const submitUserRating = async () => {
   if (!authStore.isAuthenticated) {
-    ElMessage.warning('请先登录')
+    ElMessage.warning(t('movie.pleaseLoginFirst'))
     router.push('/login')
     return
   }
 
   if (!userRatingInput.value) {
-    ElMessage.warning('请选择评分星级')
+    ElMessage.warning(t('review.ratingRequired'))
     return
   }
 
@@ -582,11 +588,11 @@ const submitUserRating = async () => {
     } else {
       await reviewStore.submitRating(movieId.value, userRatingInput.value)
     }
-    ElMessage.success('评分已提交')
+    ElMessage.success(t('review.ratingSubmitted'))
     await loadRatings()
   } catch (error) {
     console.error('Submit rating error:', error)
-    ElMessage.error('评分提交失败')
+    ElMessage.error(t('review.ratingFailed'))
   } finally {
     ratingSubmitting.value = false
   }
@@ -607,13 +613,13 @@ const loadComments = async () => {
 
 const submitComment = async () => {
   if (!authStore.isAuthenticated) {
-    ElMessage.warning('请先登录')
+    ElMessage.warning(t('movie.pleaseLoginFirst'))
     router.push('/login')
     return
   }
 
   if (!commentForm.content.trim()) {
-    ElMessage.warning('请输入评论内容')
+    ElMessage.warning(t('review.contentRequired'))
     return
   }
 
@@ -627,10 +633,10 @@ const submitComment = async () => {
     commentForm.content = ''
     commentForm.is_long_review = false
     await loadComments()
-    ElMessage.success('评论已发布')
+    ElMessage.success(t('review.commentSubmitted'))
   } catch (error) {
     console.error('Submit comment error:', error)
-    ElMessage.error('评论发布失败')
+    ElMessage.error(t('review.commentFailed'))
   } finally {
     commentSubmitting.value = false
   }
@@ -638,7 +644,7 @@ const submitComment = async () => {
 
 const toggleLike = async (comment: any) => {
   if (!authStore.isAuthenticated) {
-    ElMessage.warning('请先登录')
+    ElMessage.warning(t('movie.pleaseLoginFirst'))
     router.push('/login')
     return
   }
@@ -654,15 +660,15 @@ const toggleLike = async (comment: any) => {
 
 const removeComment = async (comment: any) => {
   try {
-    await ElMessageBox.confirm('确定要删除这条评论吗？', '确认删除', {
-      confirmButtonText: '删除',
-      cancelButtonText: '取消',
+    await ElMessageBox.confirm(t('review.deleteConfirm'), t('review.deleteTitle'), {
+      confirmButtonText: t('common.delete'),
+      cancelButtonText: t('common.cancel'),
       type: 'warning'
     })
 
     await reviewStore.deleteComment(comment.id)
     comments.value = comments.value.filter(item => item.id !== comment.id)
-    ElMessage.success('评论已删除')
+    ElMessage.success(t('review.commentDeleted'))
   } catch (error) {
     if (error !== 'cancel') {
       console.error('Delete comment error:', error)
@@ -675,17 +681,17 @@ const addMovieToCollection = async (collection: any) => {
 
   try {
     await collectionStore.addMovieToCollection(collection.id, movieId.value)
-    ElMessage.success(`已加入收藏夹：${collection.name}`)
+    ElMessage.success(t('collection.addedSuccess', { name: collection.name }))
   } catch (error) {
     console.error('Add movie to collection error:', error)
-    ElMessage.error('加入收藏夹失败')
+    ElMessage.error(t('collection.addFailed'))
   }
 }
 
 const createAndAddToCollection = async () => {
   const name = newCollectionForm.name.trim()
   if (!name) {
-    ElMessage.warning('请输入收藏夹名称')
+    ElMessage.warning(t('collection.nameRequired'))
     return
   }
 
@@ -697,14 +703,14 @@ const createAndAddToCollection = async () => {
       is_public: newCollectionForm.is_public
     })
     await collectionStore.addMovieToCollection(created.id, movieId.value)
-    ElMessage.success('已创建并加入收藏夹')
+    ElMessage.success(t('collection.createdSuccess'))
     newCollectionForm.name = ''
     newCollectionForm.description = ''
     newCollectionForm.is_public = false
     await collectionStore.fetchCollections()
   } catch (error) {
     console.error('Create collection error:', error)
-    ElMessage.error('创建收藏夹失败')
+    ElMessage.error(t('collection.createFailed'))
   } finally {
     collectionCreating.value = false
   }

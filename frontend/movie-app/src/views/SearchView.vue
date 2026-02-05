@@ -15,14 +15,14 @@
               class="back-button"
               :icon="ArrowLeft"
             >
-              返回
+              {{ $t('common.back') }}
             </el-button>
           </div>
-          <h1>搜索电影</h1>
+          <h1>{{ $t('search.searchMovies') }}</h1>
           <div class="search-box">
             <el-input
               v-model="searchQuery"
-              placeholder="输入电影名称..."
+              :placeholder="$t('search.enterMovieName')"
               size="large"
               @keyup.enter="handleSearch"
               clearable
@@ -31,7 +31,7 @@
               <template #append>
                 <el-button @click="handleSearch" type="primary" size="large">
                   <el-icon><Search /></el-icon>
-                  搜索
+                  {{ $t('search.search') }}
                 </el-button>
               </template>
             </el-input>
@@ -42,7 +42,7 @@
       <!-- Search Results -->
       <div class="search-results">
         <div v-if="!searchQuery" class="search-suggestions">
-          <h2>热门搜索</h2>
+          <h2>{{ $t('search.popularSearches') }}</h2>
           <div class="suggestions-grid">
             <el-tag 
               v-for="suggestion in popularSearches" 
@@ -58,12 +58,12 @@
 
         <div v-else>
           <div class="results-header">
-            <h2>搜索结果</h2>
+            <h2>{{ $t('search.results') }}</h2>
             <p v-if="searchResults.length > 0">
-              找到 <span class="results-count">{{ searchResults.length }}</span> 部相关电影
+              {{ $t('search.foundMovies', { count: searchResults.length }) }}
             </p>
             <p v-else-if="!loading" class="no-results">
-              没有找到 "{{ searchQuery }}" 相关的电影
+              {{ $t('search.noResultsFor', { query: searchQuery }) }}
             </p>
           </div>
 
@@ -112,11 +112,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useTMDBStore } from '@/stores/tmdb'
 import { Search, Star, ArrowLeft } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import AppLayout from '@/layouts/AppLayout.vue'
 
+const { t, locale } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const tmdbStore = useTMDBStore()
@@ -125,24 +127,28 @@ const searchQuery = ref('')
 const loading = ref(false)
 const hasSearched = ref(false)
 
-// Use tmdbStore's searchResults
 const searchResults = computed(() => tmdbStore.searchResults)
 
+watch(locale, () => {
+  if (hasSearched.value && searchQuery.value) {
+    handleSearch()
+  }
+})
+
 const popularSearches = ref([
-  '复仇者联盟', '泰坦尼克号', '盗梦空间', '星际穿越', '肖申克的救赎',
-  '阿甘正传', '教父', '黑客帝国', '千与千寻', '你的名字',
-  '流浪地球', '哪吒之魔童降世', '我和我的祖国', '中国机长',
-  '八佰', '战狼2', '红海行动', '唐人街探案'
+  'Avengers', 'Titanic', 'Inception', 'Interstellar', 'The Shawshank Redemption',
+  'Forrest Gump', 'The Godfather', 'The Matrix', 'Spirited Away', 'Your Name',
+  'The Wandering Earth', 'Ne Zha', 'My Country, My Parents', 'The Captain',
+  'The Eight Hundred', 'Wolf Warrior 2', 'Operation Red Sea', 'Detective Chinatown'
 ])
 
 const tmdbGenres: Record<number, string> = {
-  28: '动作', 12: '冒险', 16: '动画', 35: '喜剧', 80: '犯罪', 99: '纪录片',
-  18: '剧情', 10751: '家庭', 14: '奇幻', 36: '历史', 27: '恐怖',
-  10402: '音乐', 9648: '悬疑', 10749: '爱情', 878: '科幻'
+  28: t('categories.action'), 12: t('categories.adventure'), 16: t('categories.animation'), 35: t('categories.comedy'), 80: t('categories.crime'), 99: t('categories.documentary'),
+  18: t('categories.drama'), 10751: t('categories.family'), 14: t('categories.fantasy'), 36: t('categories.history'), 27: t('categories.horror'),
+  10402: t('categories.music'), 9648: t('categories.mystery'), 10749: t('categories.romance'), 878: t('categories.sciFi')
 }
 
 const goBack = () => {
-  // Use router.back() to go to the previous page with preserved state
   router.back()
 }
 
@@ -156,20 +162,20 @@ const handleImageError = (event: Event) => {
 }
 
 const formatDate = (dateString: string) => {
-  if (!dateString) return '未知'
+  if (!dateString) return t('common.unknown')
   return new Date(dateString).getFullYear()
 }
 
 const getMovieGenres = (movie: any) => {
   if (!movie.genre_ids) return []
   return movie.genre_ids.slice(0, 3).map((id: number) => 
-    tmdbGenres[id] || '未知'
+    tmdbGenres[id] || t('common.unknown')
   ).filter(Boolean)
 }
 
 const handleSearch = async () => {
   if (!searchQuery.value.trim()) {
-    ElMessage.warning('请输入搜索关键词')
+    ElMessage.warning(t('search.enterKeyword'))
     return
   }
 
@@ -177,12 +183,10 @@ const handleSearch = async () => {
   loading.value = true
   try {
     await tmdbStore.searchMovies(searchQuery.value.trim())
-    // 更新URL以包含搜索查询
     router.replace({ name: 'search', query: { q: searchQuery.value.trim() }})
-    // searchResults will be automatically updated from tmdbStore
   } catch (error) {
     console.error('Search error:', error)
-    ElMessage.error('搜索失败，请重试')
+    ElMessage.error(t('search.searchFailed'))
   } finally {
     loading.value = false
   }
@@ -193,7 +197,6 @@ const quickSearch = (query: string) => {
   handleSearch()
 }
 
-// Watch for query parameter
 watch(() => route.query.q, (newQuery) => {
   if (newQuery) {
     searchQuery.value = newQuery as string

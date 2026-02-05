@@ -3,8 +3,8 @@
     <div class="register-container">
       <div class="register-card">
         <div class="register-header">
-          <h1>注册</h1>
-          <p>加入我们，发现更多精彩电影</p>
+          <h1>{{ $t('auth.register') }}</h1>
+          <p>{{ $t('auth.joinNow') }}</p>
         </div>
 
         <el-form 
@@ -14,19 +14,19 @@
           @submit.prevent="handleRegister"
           label-position="top"
         >
-          <el-form-item label="用户名" prop="username">
+          <el-form-item :label="$t('auth.username')" prop="username">
             <el-input 
               v-model="registerForm.username" 
-              placeholder="请输入用户名"
+              :placeholder="$t('auth.username')"
               prefix-icon="User"
               size="large"
             />
           </el-form-item>
 
-          <el-form-item label="邮箱" prop="email">
+          <el-form-item :label="$t('auth.email')" prop="email">
             <el-input 
               v-model="registerForm.email" 
-              placeholder="请输入邮箱"
+              :placeholder="$t('auth.email')"
               prefix-icon="Message"
               size="large"
               type="email"
@@ -35,41 +35,41 @@
 
           <el-row :gutter="20">
             <el-col :span="12">
-              <el-form-item label="姓" prop="first_name">
+              <el-form-item :label="$t('auth.firstName')" prop="first_name">
                 <el-input 
                   v-model="registerForm.first_name" 
-                  placeholder="请输入姓"
+                  :placeholder="$t('auth.firstName')"
                   size="large"
                 />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="名" prop="last_name">
+              <el-form-item :label="$t('auth.lastName')" prop="last_name">
                 <el-input 
                   v-model="registerForm.last_name" 
-                  placeholder="请输入名"
+                  :placeholder="$t('auth.lastName')"
                   size="large"
                 />
               </el-form-item>
             </el-col>
           </el-row>
 
-          <el-form-item label="密码" prop="password">
+          <el-form-item :label="$t('auth.password')" prop="password">
             <el-input 
               v-model="registerForm.password" 
               type="password" 
-              placeholder="请输入密码"
+              :placeholder="$t('auth.password')"
               prefix-icon="Lock"
               size="large"
               show-password
             />
           </el-form-item>
 
-          <el-form-item label="确认密码" prop="password_confirm">
+          <el-form-item :label="$t('auth.confirmPassword')" prop="password_confirm">
             <el-input 
               v-model="registerForm.password_confirm" 
               type="password" 
-              placeholder="请再次输入密码"
+              :placeholder="$t('auth.confirmPassword')"
               prefix-icon="Lock"
               size="large"
               show-password
@@ -78,9 +78,9 @@
 
           <el-form-item>
             <el-checkbox v-model="agreeTerms">
-              我已阅读并同意 
-              <a href="#" @click.prevent="showTerms">用户协议</a> 和 
-              <a href="#" @click.prevent="showPrivacy">隐私政策</a>
+              {{ $t('auth.agreeTermsPrefix') }} 
+              <a href="#" @click.prevent="showTerms">{{ $t('auth.termsOfService') }}</a> {{ $t('auth.and') }} 
+              <a href="#" @click.prevent="showPrivacy">{{ $t('auth.privacyPolicy') }}</a>
             </el-checkbox>
           </el-form-item>
 
@@ -93,15 +93,15 @@
               :disabled="!agreeTerms"
               class="register-button"
             >
-              注册
+              {{ $t('auth.register') }}
             </el-button>
           </el-form-item>
         </el-form>
 
         <div class="register-footer">
           <p>
-            已有账号？
-            <router-link to="/login" class="link">立即登录</router-link>
+            {{ $t('auth.hasAccount') }}
+            <router-link to="/login" class="link">{{ $t('auth.loginNow') }}</router-link>
           </p>
         </div>
       </div>
@@ -112,10 +112,12 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { ElMessage } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 
+const { t } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -134,9 +136,9 @@ const registerForm = reactive({
 
 const validatePasswordConfirm = (rule: any, value: any, callback: any) => {
   if (value === '') {
-    callback(new Error('请再次输入密码'))
+    callback(new Error(t('auth.confirmPassword') + t('errors.required')))
   } else if (value !== registerForm.password) {
-    callback(new Error('两次输入密码不一致'))
+    callback(new Error(t('auth.passwordMismatch')))
   } else {
     callback()
   }
@@ -144,24 +146,22 @@ const validatePasswordConfirm = (rule: any, value: any, callback: any) => {
 
 const validateUsername = async (rule: any, value: any, callback: any) => {
   if (value === '') {
-    callback(new Error('请输入用户名'))
+    callback(new Error(t('auth.username') + t('errors.required')))
   } else if (value.length < 3) {
-    callback(new Error('用户名至少3个字符'))
+    callback(new Error(t('auth.username') + t('errors.minLength') + '3'))
   } else if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-    callback(new Error('用户名只能包含字母、数字和下划线'))
+    callback(new Error(t('auth.usernameInvalid')))
   } else {
-    // TODO: 检查用户名是否已存在
     callback()
   }
 }
 
 const validateEmail = async (rule: any, value: any, callback: any) => {
   if (value === '') {
-    callback(new Error('请输入邮箱'))
+    callback(new Error(t('auth.email') + t('errors.required')))
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-    callback(new Error('请输入有效的邮箱地址'))
+    callback(new Error(t('auth.emailInvalid')))
   } else {
-    // TODO: 检查邮箱是否已存在
     callback()
   }
 }
@@ -174,17 +174,17 @@ const registerRules = {
     { validator: validateEmail, trigger: 'blur' }
   ],
   first_name: [
-    { max: 30, message: '姓不能超过30个字符', trigger: 'blur' }
+    { max: 30, message: t('auth.firstName') + t('errors.maxLength') + '30', trigger: 'blur' }
   ],
   last_name: [
-    { max: 30, message: '名不能超过30个字符', trigger: 'blur' }
+    { max: 30, message: t('auth.lastName') + t('errors.maxLength') + '30', trigger: 'blur' }
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 8, message: '密码至少8个字符', trigger: 'blur' },
+    { required: true, message: t('auth.password') + t('errors.required'), trigger: 'blur' },
+    { min: 8, message: t('auth.password') + t('errors.minLength') + '8', trigger: 'blur' },
     { 
       pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/,
-      message: '密码必须包含大小写字母和数字', 
+      message: t('auth.passwordRequirements'), 
       trigger: 'blur' 
     }
   ],
@@ -197,7 +197,7 @@ const handleRegister = async () => {
   if (!registerFormRef.value) return
   
   if (!agreeTerms.value) {
-    ElMessage.warning('请先同意用户协议和隐私政策')
+    ElMessage.warning(t('auth.agreeTerms'))
     return
   }
   
@@ -208,13 +208,13 @@ const handleRegister = async () => {
     const result = await authStore.register(registerForm)
     
     if (result.success) {
-      ElMessage.success('注册成功！')
+      ElMessage.success(t('auth.registerSuccess'))
       router.push({ name: 'home' })
     } else {
       const errorMsg = result.error.username?.[0] || 
-                     result.error.email?.[0] || 
-                     result.error.non_field_errors?.[0] || 
-                     '注册失败，请检查输入信息'
+                      result.error.email?.[0] || 
+                      result.error.non_field_errors?.[0] || 
+                      t('auth.registerFailed')
       ElMessage.error(errorMsg)
     }
   } catch (error) {
@@ -225,15 +225,14 @@ const handleRegister = async () => {
 }
 
 const showTerms = () => {
-  ElMessage.info('用户协议页面开发中...')
+  ElMessage.info(t('auth.termsComingSoon'))
 }
 
 const showPrivacy = () => {
-  ElMessage.info('隐私政策页面开发中...')
+  ElMessage.info(t('auth.privacyComingSoon'))
 }
 
 onMounted(() => {
-  // 如果已经登录，跳转到首页
   if (authStore.isAuthenticated) {
     router.push({ name: 'home' })
   }

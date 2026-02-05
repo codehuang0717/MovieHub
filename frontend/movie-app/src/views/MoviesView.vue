@@ -24,20 +24,20 @@
               </div>
 
               <div class="filter-section">
-                <h3>排序方式</h3>
+                <h3>{{ $t('movie.sortBy') }}</h3>
                 <el-radio-group v-model="sortBy">
-                  <el-radio label="popularity.desc">热门</el-radio>
-                  <el-radio label="vote_average.desc">评分最高</el-radio>
-                  <el-radio label="release_date.desc">最新上映</el-radio>
-                  <el-radio label="primary_release_date.desc">即将上映</el-radio>
+                  <el-radio label="popularity.desc">{{ $t('movie.popular') }}</el-radio>
+                  <el-radio label="vote_average.desc">{{ $t('movie.topRated') }}</el-radio>
+                  <el-radio label="release_date.desc">{{ $t('movie.latestRelease') }}</el-radio>
+                  <el-radio label="primary_release_date.desc">{{ $t('movie.upcomingRelease') }}</el-radio>
                 </el-radio-group>
               </div>
 
               <div class="filter-section">
-                <h3>其他筛选</h3>
-                <el-form-item label="年份">
-                  <el-select v-model="selectedYear" @change="handleYearChange" placeholder="选择年份">
-                    <el-option label="全部" value="" />
+                <h3>{{ $t('movie.otherFilters') }}</h3>
+                <el-form-item :label="$t('movie.releaseYear')">
+                  <el-select v-model="selectedYear" @change="handleYearChange" :placeholder="$t('movie.selectYear')">
+                    <el-option :label="$t('common.all')" value="" />
                     <el-option
                       v-for="year in availableYears"
                       :key="year"
@@ -54,7 +54,7 @@
           <transition name="filter-compact">
             <div class="filter-compact" v-show="isFilterSticky">
               <div class="compact-genres">
-                <span class="compact-label">类型：</span>
+                <span class="compact-label">{{ $t('movie.genreType') }}：</span>
                 <div class="compact-genre-buttons">
                   <el-button
                     v-for="genre in genres.slice(0, 8)"
@@ -68,28 +68,28 @@
                 </div>
               </div>
               <div class="compact-sort">
-                <span class="compact-label">排序：</span>
+                <span class="compact-label">{{ $t('movie.sortBy') }}：</span>
                 <div class="compact-sort-buttons">
                   <el-button
                     :type="sortBy === 'popularity.desc' ? 'primary' : 'default'"
                     @click="sortBy = 'popularity.desc'"
                     size="small"
                   >
-                    热门
+                    {{ $t('movie.popular') }}
                   </el-button>
                   <el-button
                     :type="sortBy === 'vote_average.desc' ? 'primary' : 'default'"
                     @click="sortBy = 'vote_average.desc'"
                     size="small"
                   >
-                    评分
+                    {{ $t('movie.rating') }}
                   </el-button>
                   <el-button
                     :type="sortBy === 'release_date.desc' ? 'primary' : 'default'"
                     @click="sortBy = 'release_date.desc'"
                     size="small"
                   >
-                    最新
+                    {{ $t('movie.latestRelease') }}
                   </el-button>
                 </div>
               </div>
@@ -115,15 +115,15 @@
         <!-- Movies Grid -->
         <div class="movies-container">
             <div class="movies-header">
-              <h2 v-if="selectedGenreName">{{ selectedGenreName }}电影</h2>
-              <h2 v-else>全部电影</h2>
+              <h2 v-if="selectedGenreName">{{ $t('movie.genreMovies', { name: selectedGenreName }) }}</h2>
+              <h2 v-else>{{ $t('movie.allMovies') }}</h2>
               <div class="header-info">
-                <span class="results-count">{{ currentMovies.length }} / {{ totalResults }} 部电影</span>
+                <span class="results-count">{{ $t('movie.moviesCount', { count: currentMovies.length, total: totalResults }) }}</span>
                 <span class="sort-indicator" v-if="sortBy && selectedGenre">
-                  排序: {{ getSortLabel(sortBy) }}
+                  {{ $t('movie.sortLabel', { label: getSortLabel(sortBy) }) }}
                 </span>
                 <span class="filter-note" v-if="sortBy === 'release_date.desc' || sortBy === 'primary_release_date.desc'">
-                  {{ sortBy === 'release_date.desc' ? '显示已上映电影' : '显示未来上映电影' }}
+                  {{ sortBy === 'release_date.desc' ? $t('movie.showReleased') : $t('movie.showUpcoming') }}
                 </span>
               </div>
             </div>
@@ -166,7 +166,7 @@
 
           <!-- Empty State -->
           <div v-if="currentMovies.length === 0 && !tmdbStore.loading" class="empty-state">
-            <el-empty description="没有找到相关电影" />
+            <el-empty :description="$t('movie.noMoviesFound')" />
           </div>
 
           <!-- Pagination -->
@@ -188,18 +188,19 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useTMDBStore } from '@/stores/tmdb'
 import { Search, User, Star, Collection, SwitchButton, ArrowUp } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import AppLayout from '@/layouts/AppLayout.vue'
 
+const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const tmdbStore = useTMDBStore()
 
-// Reactive state
 const searchQuery = ref('')
 const sortBy = ref('popularity.desc')
 const selectedGenre = ref<number | null>(null)
@@ -212,29 +213,36 @@ const isAnimating = ref(false)
 const currentMoviesData = ref([])
 const isLoadingMovies = ref(false)
 
-// TMDB Genres - 添加全部选项
-const genres = ref([
-  { id: null, name: '全部' },  // 添加全部选项
-  { id: 28, name: '动作' },
-  { id: 12, name: '冒险' },
-  { id: 16, name: '动画' },
-  { id: 35, name: '喜剧' },
-  { id: 80, name: '犯罪' },
-  { id: 99, name: '纪录片' },
-  { id: 18, name: '剧情' },
-  { id: 10751, name: '家庭' },
-  { id: 14, name: '奇幻' },
-  { id: 36, name: '历史' },
-  { id: 27, name: '恐怖' },
-  { id: 10402, name: '音乐' },
-  { id: 9648, name: '悬疑' },
-  { id: 10749, name: '爱情' },
-  { id: 878, name: '科幻' },
-  { id: 10770, name: '电视电影' },
-  { id: 53, name: '惊悚' },
-  { id: 10752, name: '战争' },
-  { id: 37, name: '西部' }
+const genres = computed(() => [
+  { id: null, name: t('common.all') },
+  { id: 28, name: t('categories.action') },
+  { id: 12, name: t('categories.adventure') },
+  { id: 16, name: t('categories.animation') },
+  { id: 35, name: t('categories.comedy') },
+  { id: 80, name: t('categories.crime') },
+  { id: 99, name: t('categories.documentary') },
+  { id: 18, name: t('categories.drama') },
+  { id: 10751, name: t('categories.family') },
+  { id: 14, name: t('categories.fantasy') },
+  { id: 36, name: t('categories.history') },
+  { id: 27, name: t('categories.horror') },
+  { id: 10402, name: t('categories.music') },
+  { id: 9648, name: t('categories.mystery') },
+  { id: 10749, name: t('categories.romance') },
+  { id: 878, name: t('categories.sciFi') },
+  { id: 10770, name: t('categories.tvMovie') },
+  { id: 53, name: t('categories.thriller') },
+  { id: 10752, name: t('categories.war') },
+  { id: 37, name: t('categories.western') }
 ])
+
+const { locale } = useI18n()
+
+watch(locale, () => {
+  currentMoviesData.value = []
+  tmdbStore.genreMovies = []
+  loadMovies()
+})
 
 // Computed properties
 const availableYears = computed(() => {
@@ -258,7 +266,7 @@ const currentMovies = computed(() => {
 
 // Helper functions
 const formatDate = (dateString: string) => {
-  if (!dateString || dateString === '未知') return '未知'
+  if (!dateString || dateString === t('common.unknown')) return t('common.unknown')
   return new Date(dateString).getFullYear().toString()
 }
 
@@ -275,21 +283,19 @@ const isPlaceholderImage = (posterPath: string) => {
 
 const getSortLabel = (sortBy: string) => {
   const sortLabels: { [key: string]: string } = {
-    'popularity.desc': '热门',
-    'vote_average.desc': '评分最高',
-    'release_date.desc': '最新上映（已发布）',
-    'primary_release_date.desc': '即将上映（未来）'
+    'popularity.desc': t('movie.popular'),
+    'vote_average.desc': t('movie.topRated'),
+    'release_date.desc': t('movie.latestRelease'),
+    'primary_release_date.desc': t('movie.upcomingRelease')
   }
   return sortLabels[sortBy] || sortBy
 }
 
 const handleImageError = (event: Event) => {
   const img = event.target as HTMLImageElement
-  // 如果当前还不是占位符图片，则设置占位符图片
   if (!img.src.includes('placeholder-movie.svg') && !img.src.includes('placeholder-movie.jpg')) {
     img.src = '/placeholder-movie.svg'
-    img.alt = '暂无该电影海报'
-    // 添加样式标识，避免重复错误处理
+    img.alt = t('movie.noPosterAvailable')
     img.setAttribute('data-error-handled', 'true')
   }
 }
@@ -399,7 +405,7 @@ const handleScroll = () => {
 
 const handleLogout = async () => {
   await authStore.logout()
-  ElMessage.success('已退出登录')
+  ElMessage.success(t('auth.logoutSuccess'))
 }
 
 const loadMovies = async () => {
@@ -414,24 +420,21 @@ const loadMovies = async () => {
 
     if (selectedGenre.value && selectedGenre.value !== null) {
       console.log('Loading genre movies with sortBy:', sortBy.value)
-      // 统一使用discover API进行分类筛选，这样可以支持所有排序方式
       const result = await tmdbStore.fetchMoviesByGenre(selectedGenre.value, currentPage.value, selectedYear.value, sortBy.value)
       totalResults.value = result.total_results || result.total_pages * 20
       console.log('Genre movies loaded:', result.results.length, 'movies', 'sorted by:', sortBy.value)
       console.log('Sample movie sort data:', result.results[0]?.title, 'popularity:', result.results[0]?.popularity, 'vote_average:', result.results[0]?.vote_average)
     } else {
       console.log('Loading all movies with sortBy:', sortBy.value)
-      // 当选择"全部"时，也使用discover API以保持一致的排序逻辑
       const movieData = await tmdbStore.fetchDiscoverMovies(sortBy.value, currentPage.value, selectedYear.value)
 
-      // 存储电影数据到本地状态
       currentMoviesData.value = movieData.results || []
       totalResults.value = movieData.total_results || 1000
       console.log('Movies loaded:', movieData.results?.length || 0, 'movies for sort:', sortBy.value)
     }
   } catch (error) {
     console.error('Failed to load movies:', error)
-    ElMessage.error('加载电影失败')
+    ElMessage.error(t('movie.loadingFailed'))
   } finally {
     isLoadingMovies.value = false
   }

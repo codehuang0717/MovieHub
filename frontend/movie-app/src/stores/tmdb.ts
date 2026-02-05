@@ -1,11 +1,34 @@
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import { useI18n } from 'vue-i18n'
 
 const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY || '2d89ddec4f8acd4c9f2036ea7321f326'
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3'
 
+const localeToTMDBLanguage = (locale: string): string => {
+  const languageMap: Record<string, string> = {
+    zh: 'zh-CN',
+    en: 'en-US',
+    ja: 'ja-JP',
+    ko: 'ko-KR',
+    fr: 'fr-FR',
+    de: 'de-DE',
+    es: 'es-ES',
+    it: 'it-IT',
+    pt: 'pt-PT',
+    ru: 'ru-RU',
+    zh_TW: 'zh-TW',
+    zh_CN: 'zh-CN'
+  }
+  return languageMap[locale] || 'en-US'
+}
+
 export const useTMDBStore = defineStore('tmdb', () => {
+  const { locale } = useI18n()
+  
+  const currentLanguage = ref(localeToTMDBLanguage(locale.value))
+  
   const popularMovies = ref([])
   const topRatedMovies = ref([])
   const upcomingMovies = ref([])
@@ -21,9 +44,14 @@ export const useTMDBStore = defineStore('tmdb', () => {
     baseURL: TMDB_BASE_URL,
     params: {
       api_key: TMDB_API_KEY,
-      language: 'zh-CN'
+      language: currentLanguage.value
     }
   })
+
+  watch(locale, (newLocale) => {
+    currentLanguage.value = localeToTMDBLanguage(newLocale)
+    tmdbClient.defaults.params.language = currentLanguage.value
+  }, { immediate: true })
 
   const getImageUrl = (path: string, size = 'w500') => {
     if (!path || path.trim() === '') {
@@ -40,7 +68,7 @@ export const useTMDBStore = defineStore('tmdb', () => {
         with_genres: genreId,
         sort_by: sortBy,
         page,
-        language: 'zh-CN',
+        language: currentLanguage.value,
         include_adult: false,
         include_video: false,
         vote_count_gte: 50
@@ -106,7 +134,7 @@ export const useTMDBStore = defineStore('tmdb', () => {
       const params: any = {
         sort_by: sortBy,
         page,
-        language: 'zh-CN',
+        language: currentLanguage.value,
         include_adult: false,
         include_video: false
       }
@@ -342,7 +370,7 @@ export const useTMDBStore = defineStore('tmdb', () => {
   const fetchSimilarMovies = async (movieId: number) => {
     try {
       const response = await tmdbClient.get(`/movie/${movieId}/similar`, {
-        params: { language: 'zh-CN' }
+        params: { language: currentLanguage.value }
       })
 
       return response.data.results.map((movie: any) => ({
@@ -361,7 +389,7 @@ export const useTMDBStore = defineStore('tmdb', () => {
   const fetchRecommendedMovies = async (movieId: number) => {
     try {
       const response = await tmdbClient.get(`/movie/${movieId}/recommendations`, {
-        params: { language: 'zh-CN' }
+        params: { language: currentLanguage.value }
       })
 
       return response.data.results.map((movie: any) => ({
@@ -377,6 +405,15 @@ export const useTMDBStore = defineStore('tmdb', () => {
     }
   }
 
+  const reloadAllData = async () => {
+    await Promise.all([
+      fetchPopularMovies(),
+      fetchTopRatedMovies(),
+      fetchUpcomingMovies(),
+      fetchNowPlayingMovies()
+    ])
+  }
+
   return {
     popularMovies,
     topRatedMovies,
@@ -388,6 +425,7 @@ export const useTMDBStore = defineStore('tmdb', () => {
     loading,
     genreLoading,
     error,
+    currentLanguage,
     tmdbClient,
     getImageUrl,
     fetchPopularMovies,
@@ -399,6 +437,7 @@ export const useTMDBStore = defineStore('tmdb', () => {
     fetchMoviesByGenre,
     fetchDiscoverMovies,
     fetchSimilarMovies,
-    fetchRecommendedMovies
+    fetchRecommendedMovies,
+    reloadAllData
   }
 })

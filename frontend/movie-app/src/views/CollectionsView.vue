@@ -1,126 +1,125 @@
 <template>
   <AppLayout>
     <div class="collections-page">
-    <div class="page-header">
-      <h1>我的收藏夹</h1>
-      <el-button type="primary" @click="showCreateDialog">
-        <el-icon><Plus /></el-icon>
-        新建收藏夹
-      </el-button>
-    </div>
-
-    <div v-if="loading" class="loading">
-      <el-skeleton :rows="4" animated />
-    </div>
-
-    <div v-else-if="error" class="error">
-      <el-alert title="加载失败" :description="error" type="error" show-icon />
-    </div>
-
-    <div v-else class="collections-grid">
-      <el-row :gutter="20">
-        <el-col
-          v-for="collection in collections"
-          :key="collection.id"
-          :xs="24" :sm="12" :md="8" :lg="6"
-        >
-          <el-card class="collection-card" @click="viewCollection(collection)">
-            <div class="collection-header">
-              <h3>{{ collection.name }}</h3>
-              <div class="collection-meta">
-                <span class="movie-count">{{ collection.movies_count || collection.movies?.length || 0 }} 部电影</span>
-                <el-tag v-if="collection.is_public" size="small" type="success">
-                  公开
-                </el-tag>
-                <el-tag v-else size="small" type="info">
-                  私密
-                </el-tag>
-              </div>
-            </div>
-
-            <div v-if="collection.description" class="collection-description">
-              {{ collection.description }}
-            </div>
-
-            <div v-if="collection.movies?.length > 0" class="preview-movies">
-              <div
-                v-for="movie in collection.movies.slice(0, 4)"
-                :key="movie.id"
-                class="preview-movie"
-              >
-                <img
-                  :src="movie.poster_path || movie.poster"
-                  :alt="movie.title"
-                  @error="handleImageError"
-                />
-              </div>
-              <div v-if="(collection.movies_count || 0) > 4" class="more-movies">
-                +{{ collection.movies_count - 4 }}
-              </div>
-            </div>
-
-            <div class="collection-actions">
-              <el-button size="small" @click.stop="editCollection(collection)">
-                编辑
-              </el-button>
-              <el-button size="small" type="danger" @click.stop="deleteCollection(collection)">
-                删除
-              </el-button>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
-
-      <div v-if="collections.length === 0" class="no-collections">
-        <el-empty description="暂无收藏夹">
-          <el-button type="primary" @click="showCreateDialog">
-            创建第一个收藏夹
-          </el-button>
-        </el-empty>
-      </div>
-    </div>
-
-    <!-- 创建/编辑收藏夹对话框 -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="editingCollection ? '编辑收藏夹' : '新建收藏夹'"
-      width="500px"
-    >
-      <el-form
-        :model="collectionForm"
-        :rules="collectionRules"
-        ref="collectionFormRef"
-        label-width="80px"
-      >
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="collectionForm.name" placeholder="请输入收藏夹名称" />
-        </el-form-item>
-
-        <el-form-item label="描述" prop="description">
-          <el-input
-            v-model="collectionForm.description"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入收藏夹描述（可选）"
-          />
-        </el-form-item>
-
-        <el-form-item label="可见性">
-          <el-switch
-            v-model="collectionForm.is_public"
-            active-text="公开"
-            inactive-text="私密"
-          />
-        </el-form-item>
-      </el-form>
-
-      <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="saveCollection" :loading="saving">
-          {{ editingCollection ? '更新' : '创建' }}
+      <div class="page-header">
+        <h1>{{ $t('collections.myCollections') }}</h1>
+        <el-button type="primary" @click="showCreateDialog">
+          <el-icon><Plus /></el-icon>
+          {{ $t('collections.createCollection') }}
         </el-button>
-      </template>
-    </el-dialog>
+      </div>
+
+      <div v-if="loading" class="loading">
+        <el-skeleton :rows="4" animated />
+      </div>
+
+      <div v-else-if="error" class="error">
+        <el-alert :title="$t('errors.loadFailed')" :description="error" type="error" show-icon />
+      </div>
+
+      <div v-else class="collections-grid">
+        <el-row :gutter="20">
+          <el-col
+            v-for="collection in collections"
+            :key="collection.id"
+            :xs="24" :sm="12" :md="8" :lg="6"
+          >
+            <el-card class="collection-card" @click="viewCollection(collection)">
+              <div class="collection-header">
+                <h3>{{ collection.name }}</h3>
+                <div class="collection-meta">
+                  <span class="movie-count">{{ $t('collections.moviesCount', { count: collection.movies_count || collection.movies?.length || 0 }) }}</span>
+                  <el-tag v-if="collection.is_public" size="small" type="success">
+                    {{ $t('collections.public') }}
+                  </el-tag>
+                  <el-tag v-else size="small" type="info">
+                    {{ $t('collections.private') }}
+                  </el-tag>
+                </div>
+              </div>
+
+              <div v-if="collection.description" class="collection-description">
+                {{ collection.description }}
+              </div>
+
+              <div v-if="collection.movies?.length > 0" class="preview-movies">
+                <div
+                  v-for="movie in collection.movies.slice(0, 4)"
+                  :key="movie.id"
+                  class="preview-movie"
+                >
+                  <img
+                    :src="movie.poster_path || movie.poster"
+                    :alt="movie.title"
+                    @error="handleImageError"
+                  />
+                </div>
+                <div v-if="(collection.movies_count || 0) > 4" class="more-movies">
+                  +{{ collection.movies_count - 4 }}
+                </div>
+              </div>
+
+              <div class="collection-actions">
+                <el-button size="small" @click.stop="editCollection(collection)">
+                  {{ $t('common.edit') }}
+                </el-button>
+                <el-button size="small" type="danger" @click.stop="deleteCollection(collection)">
+                  {{ $t('common.delete') }}
+                </el-button>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+
+        <div v-if="collections.length === 0" class="no-collections">
+          <el-empty :description="$t('collections.noCollections')">
+            <el-button type="primary" @click="showCreateDialog">
+              {{ $t('collections.createFirst') }}
+            </el-button>
+          </el-empty>
+        </div>
+      </div>
+
+      <el-dialog
+        v-model="dialogVisible"
+        :title="editingCollection ? $t('collections.editCollection') : $t('collections.createCollection')"
+        width="500px"
+      >
+        <el-form
+          :model="collectionForm"
+          :rules="collectionRules"
+          ref="collectionFormRef"
+          label-width="80px"
+        >
+          <el-form-item :label="$t('collections.name')" prop="name">
+            <el-input v-model="collectionForm.name" :placeholder="$t('collections.enterName')" />
+          </el-form-item>
+
+          <el-form-item :label="$t('collections.description')" prop="description">
+            <el-input
+              v-model="collectionForm.description"
+              type="textarea"
+              :rows="3"
+              :placeholder="$t('collections.enterDescription')"
+            />
+          </el-form-item>
+
+          <el-form-item :label="$t('collections.visibility')">
+            <el-switch
+              v-model="collectionForm.is_public"
+              :active-text="$t('collections.public')"
+              :inactive-text="$t('collections.private')"
+            />
+          </el-form-item>
+        </el-form>
+
+        <template #footer>
+          <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="saveCollection" :loading="saving">
+            {{ editingCollection ? $t('common.update') : $t('common.create') }}
+          </el-button>
+        </template>
+      </el-dialog>
     </div>
   </AppLayout>
 </template>
@@ -128,12 +127,14 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { Plus } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { useCollectionStore } from '@/stores/collections'
 
+const { t } = useI18n()
 const router = useRouter()
 const collectionStore = useCollectionStore()
 
@@ -154,32 +155,12 @@ const collectionForm = reactive({
 
 const collectionRules = {
   name: [
-    { required: true, message: '请输入收藏夹名称', trigger: 'blur' },
-    { min: 1, max: 100, message: '名称长度在1到100个字符之间', trigger: 'blur' }
+    { required: true, message: t('collections.nameRequired'), trigger: 'blur' },
+    { min: 1, max: 100, message: t('collections.nameLength'), trigger: 'blur' }
   ],
   description: [
-    { max: 500, message: '描述不能超过500个字符', trigger: 'blur' }
+    { max: 500, message: t('collections.descLength'), trigger: 'blur' }
   ]
-}
-
-const viewCollection = (collection: any) => {
-  router.push(`/collections/${collection.id}`)
-}
-
-const showCreateDialog = () => {
-  editingCollection.value = null
-  collectionForm.name = ''
-  collectionForm.description = ''
-  collectionForm.is_public = false
-  dialogVisible.value = true
-}
-
-const editCollection = (collection: any) => {
-  editingCollection.value = collection
-  collectionForm.name = collection.name
-  collectionForm.description = collection.description || ''
-  collectionForm.is_public = collection.is_public
-  dialogVisible.value = true
 }
 
 const saveCollection = async () => {
@@ -197,10 +178,10 @@ const saveCollection = async () => {
 
     if (editingCollection.value) {
       await collectionStore.updateCollection(editingCollection.value.id, payload)
-      ElMessage.success('收藏夹更新成功')
+      ElMessage.success(t('collections.updateSuccess'))
     } else {
       await collectionStore.createCollection(payload)
-      ElMessage.success('收藏夹创建成功')
+      ElMessage.success(t('collections.createSuccess'))
     }
 
     dialogVisible.value = false
@@ -215,17 +196,17 @@ const saveCollection = async () => {
 const deleteCollection = async (collection: any) => {
   try {
     await ElMessageBox.confirm(
-      `确定要删除收藏夹 "${collection.name}" 吗？此操作不可恢复。`,
-      '确认删除',
+      t('collections.deleteConfirm', { name: collection.name }),
+      t('collections.deleteTitle'),
       {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
         type: 'warning'
       }
     )
 
     await collectionStore.deleteCollection(collection.id)
-    ElMessage.success('收藏夹删除成功')
+    ElMessage.success(t('collections.deleteSuccess'))
   } catch (err) {
     if (err !== 'cancel') {
       console.error('Delete collection error:', err)

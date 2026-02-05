@@ -9,35 +9,20 @@
 
       <div class="nav-menu">
         <router-link to="/" class="nav-item" active-class="nav-active">
-          首页
+          {{ $t('common.home') }}
         </router-link>
         <router-link to="/movies" class="nav-item" active-class="nav-active">
-          电影
+          {{ $t('common.movies') }}
         </router-link>
-<!--        <router-link to="/categories" class="nav-item" active-class="nav-active">-->
-<!--          分类-->
-<!--        </router-link>-->
         <router-link to="/search" class="nav-item" active-class="nav-active">
-          搜索
+          {{ $t('common.search') }}
         </router-link>
-        <!-- <router-link to="/avatar-test" class="nav-item" active-class="nav-active">
-          头像测试
-        </router-link>
-        <router-link to="/avatar-sync-test" class="nav-item" active-class="nav-active">
-          头像同步
-        </router-link>
-        <router-link to="/watchlist-test" class="nav-item" active-class="nav-active">
-          想看测试
-        </router-link>
-        <router-link to="/api-test" class="nav-item" active-class="nav-active">
-          API测试
-        </router-link> -->
       </div>
 
       <div class="nav-search">
         <el-input
           v-model="searchQuery"
-          placeholder="搜索电影..."
+          :placeholder="$t('search.placeholder')"
           @keyup.enter="performSearch"
           clearable
           class="search-input"
@@ -51,6 +36,9 @@
       </div>
 
       <div class="nav-auth">
+        <el-button @click="switchLanguage" text size="small" class="lang-switch">
+          {{ currentLocale === 'zh' ? 'EN' : '中文' }}
+        </el-button>
         <template v-if="authStore.isAuthenticated">
           <el-dropdown>
             <div class="user-nav-avatar">
@@ -68,24 +56,24 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="router.push('/profile')">
-                  <el-icon><User /></el-icon> 个人中心
+                  <el-icon><User /></el-icon> {{ $t('profile.title') }}
                 </el-dropdown-item>
                 <el-dropdown-item @click="router.push('/watchlist')">
-                  <el-icon><Star /></el-icon> 想看列表
+                  <el-icon><Star /></el-icon> {{ $t('watchlist.title') }}
                 </el-dropdown-item>
                 <el-dropdown-item @click="router.push('/collections')">
-                  <el-icon><Collection /></el-icon> 收藏夹
+                  <el-icon><Collection /></el-icon> {{ $t('collections.myCollections') }}
                 </el-dropdown-item>
                 <el-dropdown-item divided @click="handleLogout">
-                  <el-icon><SwitchButton /></el-icon> 退出登录
+                  <el-icon><SwitchButton /></el-icon> {{ $t('common.logout') }}
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
         </template>
         <template v-else>
-          <el-button @click="handleLogin" text size="large">登录</el-button>
-          <el-button @click="router.push({ name: 'register' })" type="primary" size="large">注册</el-button>
+          <el-button @click="handleLogin" text size="large">{{ $t('common.login') }}</el-button>
+          <el-button @click="router.push({ name: 'register' })" type="primary" size="large">{{ $t('common.register') }}</el-button>
         </template>
       </div>
     </div>
@@ -95,14 +83,27 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
+import { useTMDBStore } from '@/stores/tmdb'
 import { Search, User, Star, Collection, SwitchButton } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
+const { t, locale } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
+const tmdbStore = useTMDBStore()
 const searchQuery = ref('')
 const avatarLoadError = ref(false)
+
+const currentLocale = computed(() => locale.value)
+
+const switchLanguage = async () => {
+  const newLocale = currentLocale.value === 'zh' ? 'en' : 'zh'
+  locale.value = newLocale
+  localStorage.setItem('locale', newLocale)
+  await tmdbStore.reloadAllData()
+}
 
 // 计算导航栏头像URL
 const userNavAvatar = computed(() => {
@@ -133,7 +134,7 @@ const performSearch = () => {
 
 const handleLogout = async () => {
   await authStore.logout()
-  ElMessage.success('已退出登录')
+  ElMessage.success(t('auth.logoutSuccess'))
   router.push('/')
 }
 
@@ -145,14 +146,6 @@ const handleAvatarError = () => {
   avatarLoadError.value = true
   console.log('导航栏头像加载失败，显示默认文字头像')
 }
-
-// 监听用户变化，重置头像错误状态
-const handleUserChange = () => {
-  avatarLoadError.value = false
-}
-
-// 监听用户数据变化
-computed(() => authStore.user, handleUserChange)
 </script>
 
 <style scoped>
@@ -297,6 +290,19 @@ computed(() => authStore.user, handleUserChange)
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.lang-switch {
+  color: #8b949e;
+  font-size: 12px;
+  padding: 4px 8px;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+}
+
+.lang-switch:hover {
+  color: #58a6ff;
+  border-color: #58a6ff;
 }
 
 .user-nav-avatar {

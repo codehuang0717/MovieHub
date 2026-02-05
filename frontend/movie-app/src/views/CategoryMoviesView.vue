@@ -98,67 +98,72 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useTMDBStore } from '@/stores/tmdb'
 import { Picture, Star } from '@element-plus/icons-vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 
 const route = useRoute()
 const router = useRouter()
+const { t, locale } = useI18n()
 const tmdbStore = useTMDBStore()
 
-// TMDB Genres
-const genres = [
-  { id: 28, name: '动作' },
-  { id: 12, name: '冒险' },
-  { id: 16, name: '动画' },
-  { id: 35, name: '喜剧' },
-  { id: 80, name: '犯罪' },
-  { id: 99, name: '纪录片' },
-  { id: 18, name: '剧情' },
-  { id: 10751, name: '家庭' },
-  { id: 14, name: '奇幻' },
-  { id: 36, name: '历史' },
-  { id: 27, name: '恐怖' },
-  { id: 10402, name: '音乐' },
-  { id: 9648, name: '悬疑' },
-  { id: 10749, name: '爱情' },
-  { id: 878, name: '科幻' },
-  { id: 10770, name: '电视电影' },
-  { id: 53, name: '惊悚' },
-  { id: 10752, name: '战争' },
-  { id: 37, name: '西部' }
-]
+const genres = computed(() => [
+  { id: 28, name: t('categories.action') },
+  { id: 12, name: t('categories.adventure') },
+  { id: 16, name: t('categories.animation') },
+  { id: 35, name: t('categories.comedy') },
+  { id: 80, name: t('categories.crime') },
+  { id: 99, name: t('categories.documentary') },
+  { id: 18, name: t('categories.drama') },
+  { id: 10751, name: t('categories.family') },
+  { id: 14, name: t('categories.fantasy') },
+  { id: 36, name: t('categories.history') },
+  { id: 27, name: t('categories.horror') },
+  { id: 10402, name: t('categories.music') },
+  { id: 9648, name: t('categories.mystery') },
+  { id: 10749, name: t('categories.romance') },
+  { id: 878, name: t('categories.sciFi') },
+  { id: 10770, name: t('categories.tvMovie') },
+  { id: 53, name: t('categories.thriller') },
+  { id: 10752, name: t('categories.war') },
+  { id: 37, name: t('categories.western') }
+])
 
 const categoryId = computed(() => parseInt(route.params.id as string))
 const categoryName = computed(() => {
-  const genre = genres.find(g => g.id === categoryId.value)
-  return genre ? genre.name : '未知分类'
+  const genre = genres.value.find(g => g.id === categoryId.value)
+  return genre ? genre.name : t('common.unknown')
 })
 const categoryDescription = computed(() => {
   const descriptions: Record<number, string> = {
-    28: '刺激精彩的动作大片',
-    12: '充满冒险的奇幻旅程',
-    16: '适合全家的精彩动画',
-    35: '让人开怀大笑的轻松喜剧',
-    80: '扣人心弦的犯罪故事',
-    99: '真实世界的精彩记录',
-    18: '深刻感人的剧情佳作',
-    10751: '温馨有趣的家庭影片',
-    14: '充满想象力的奇幻世界',
-    36: '重温历史的经典时刻',
-    27: '惊险刺激的恐怖片',
-    10402: '与音乐相关的精彩故事',
-    9648: '扑朔迷离的悬疑剧情',
-    10749: '浪漫动人的爱情故事',
-    878: '探索未来的科幻世界',
-    10770: '精选电视电影佳作',
-    53: '惊险刺激的惊悚片',
-    10752: '震撼人心的战争史诗',
-    37: '经典的西部传奇故事'
+    28: t('categoryDescriptions.action'),
+    12: t('categoryDescriptions.adventure'),
+    16: t('categoryDescriptions.animation'),
+    35: t('categoryDescriptions.comedy'),
+    80: t('categoryDescriptions.crime'),
+    99: t('categoryDescriptions.documentary'),
+    18: t('categoryDescriptions.drama'),
+    10751: t('categoryDescriptions.family'),
+    14: t('categoryDescriptions.fantasy'),
+    36: t('categoryDescriptions.history'),
+    27: t('categoryDescriptions.horror'),
+    10402: t('categoryDescriptions.music'),
+    9648: t('categoryDescriptions.mystery'),
+    10749: t('categoryDescriptions.romance'),
+    878: t('categoryDescriptions.sciFi'),
+    10770: t('categoryDescriptions.tvMovie'),
+    53: t('categoryDescriptions.thriller'),
+    10752: t('categoryDescriptions.war'),
+    37: t('categoryDescriptions.western')
   }
   return descriptions[categoryId.value] || ''
+})
+
+watch(locale, () => {
+  filterMovies()
 })
 
 const sortBy = ref('popularity.desc')

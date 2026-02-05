@@ -33,15 +33,15 @@
             <div class="profile-stats">
               <div class="stat-item">
                 <div class="stat-number">{{ userStats.watched_count || 0 }}</div>
-                <div class="stat-label">已观看</div>
+                <div class="stat-label">{{ $t('profile.watched') }}</div>
               </div>
               <div class="stat-item">
                 <div class="stat-number">{{ userStats.rated_count || 0 }}</div>
-                <div class="stat-label">已评分</div>
+                <div class="stat-label">{{ $t('profile.rated') }}</div>
               </div>
               <div class="stat-item">
                 <div class="stat-number">{{ userStats.collections_count || 0 }}</div>
-                <div class="stat-label">收藏夹</div>
+                <div class="stat-label">{{ $t('profile.collections') }}</div>
               </div>
             </div>
           </el-card>
@@ -49,35 +49,35 @@
 
         <el-col :span="16">
           <el-tabs v-model="activeTab">
-            <el-tab-pane label="个人资料" name="profile">
+            <el-tab-pane :label="$t('profile.personalInfo')" name="profile">
               <el-card>
                 <el-form
                   :model="profileForm"
                   label-width="80px"
                   @submit.prevent="updateProfile"
                 >
-                  <el-form-item label="用户名">
+                  <el-form-item :label="$t('auth.username')">
                     <el-input v-model="profileForm.username" disabled />
                   </el-form-item>
 
-                  <el-form-item label="邮箱">
+                  <el-form-item :label="$t('auth.email')">
                     <el-input v-model="profileForm.email" type="email" />
                   </el-form-item>
 
-                  <el-form-item label="姓名">
-                    <el-input v-model="profileForm.first_name" placeholder="名" />
+                  <el-form-item :label="$t('profile.name')">
+                    <el-input v-model="profileForm.first_name" :placeholder="$t('profile.firstName')" />
                   </el-form-item>
 
-                  <el-form-item label="&nbsp;">
-                    <el-input v-model="profileForm.last_name" placeholder="姓" />
+                  <el-form-item :label="'&nbsp;'">
+                    <el-input v-model="profileForm.last_name" :placeholder="$t('profile.lastName')" />
                   </el-form-item>
 
-                  <el-form-item label="个人简介">
+                  <el-form-item :label="$t('profile.bio')">
                     <el-input
                       v-model="profileForm.profile.bio"
                       type="textarea"
                       :rows="4"
-                      placeholder="介绍一下自己..."
+                      :placeholder="$t('profile.introduceYourself')"
                     />
                   </el-form-item>
                   <el-form-item>
@@ -86,17 +86,17 @@
                       @click="updateProfile"
                       :loading="updatingProfile"
                     >
-                      保存修改
+                      {{ $t('common.save') }}
                     </el-button>
                   </el-form-item>
                 </el-form>
               </el-card>
             </el-tab-pane>
 
-            <el-tab-pane label="我的足迹" name="history">
+            <el-tab-pane :label="$t('profile.history')" name="history">
               <el-card>
                 <div v-if="userHistory.length === 0" class="empty-state">
-                  <el-empty description="暂无观看记录" />
+                  <el-empty :description="$t('profile.noHistory')" />
                 </div>
                 <div v-else class="history-list">
                   <div
@@ -118,7 +118,7 @@
                     <div class="movie-info">
                       <h4>{{ item.movie.title }}</h4>
                       <p class="watch-time">
-                        观看于 {{ formatDate(item.created_at) }}
+                        {{ $t('profile.watchedAt', { date: formatDate(item.created_at) }) }}
                       </p>
                       <div v-if="item.rating" class="rating">
                         <el-rate v-model="item.rating.score" disabled size="small" />
@@ -129,10 +129,10 @@
               </el-card>
             </el-tab-pane>
 
-            <el-tab-pane label="我的评分" name="ratings">
+            <el-tab-pane :label="$t('profile.myRatings')" name="ratings">
               <el-card>
                 <div v-if="userRatings.length === 0" class="empty-state">
-                  <el-empty description="暂无评分记录" />
+                  <el-empty :description="$t('profile.noRatings')" />
                 </div>
                 <div v-else class="ratings-list">
                   <div
@@ -162,7 +162,7 @@
                     </div>
                     <div class="rating-actions">
                       <el-button size="small" @click="editRating(rating)">
-                        修改评分
+                        {{ $t('review.editReview') }}
                       </el-button>
                     </div>
                   </div>
@@ -179,13 +179,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { Picture, User } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import AppLayout from '@/layouts/AppLayout.vue'
 import AvatarUpload from '@/components/AvatarUpload.vue'
 
-
+const { t } = useI18n()
 const authStore = useAuthStore()
 
 const user = computed(() => {
@@ -252,23 +253,22 @@ const updateProfile = async () => {
     console.log('Submitting profile form:', profileForm.value)
     const result = await authStore.updateProfile(profileForm.value)
     if (result.success) {
-      ElMessage.success('个人资料更新成功')
+      ElMessage.success(t('profile.updateSuccess'))
       console.log('Profile update successful:', result.data)
     } else {
       console.error('Profile update failed:', result.error)
-      ElMessage.error('更新失败: ' + (result.error.message || '未知错误'))
+      ElMessage.error(t('profile.updateFailed') + ': ' + (result.error.message || t('errors.unknown')))
     }
   } catch (err) {
     console.error('Profile update error:', err)
-    ElMessage.error('更新失败，请重试')
+    ElMessage.error(t('profile.updateFailed') + ', ' + t('errors.pleaseRetry'))
   } finally {
     updatingProfile.value = false
   }
 }
 
 const editRating = (rating: any) => {
-  // TODO: 实现评分编辑功能
-  ElMessage.info('评分编辑功能开发中...')
+  ElMessage.info(t('profile.ratingEditComingSoon'))
 }
 
 const handleImageError = (event: Event) => {
@@ -293,7 +293,7 @@ const formatDate = (dateString: string) => {
 
 const loadUserData = async () => {
   if (!authStore.isAuthenticated) {
-    error.value = '请先登录'
+    error.value = t('movie.pleaseLoginFirst')
     return
   }
 
@@ -305,7 +305,6 @@ const loadUserData = async () => {
       console.log('Avatar URL:', user.value.profile?.avatar)
       console.log('Avatar type:', typeof user.value.profile?.avatar)
 
-      // 设置表单数据
       profileForm.value = {
         username: user.value.username,
         email: user.value.email,
@@ -320,12 +319,12 @@ const loadUserData = async () => {
       console.log('Profile form avatar:', profileForm.value.profile.avatar)
 
     } else {
-      throw new Error(result.error?.message || '加载失败')
+      throw new Error(result.error?.message || t('errors.loadFailed'))
     }
 
   } catch (err) {
     console.error('Load user data error:', err)
-    error.value = '加载用户数据失败'
+    error.value = t('profile.loadUserDataFailed')
   } finally {
     loading.value = false
   }

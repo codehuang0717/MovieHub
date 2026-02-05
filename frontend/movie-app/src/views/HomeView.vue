@@ -21,7 +21,7 @@
             </div>
             <div class="hero-content">
               <div class="hero-info">
-                <div class="hero-kicker">本周主推</div>
+                <div class="hero-kicker">{{ $t('home.featuredThisWeek') }}</div>
                 <h1 class="hero-title">{{ movie.title }}</h1>
                 <p class="hero-overview">{{ movie.overview }}</p>
                 <div class="hero-meta">
@@ -32,10 +32,10 @@
                 </div>
                 <div class="hero-actions">
                   <el-button type="primary" size="large" @click="goToMovie(movie.id)">
-                    <el-icon><VideoPlay /></el-icon> 查看详情
+                    <el-icon><VideoPlay /></el-icon> {{ $t('home.viewDetails') }}
                   </el-button>
                   <el-button size="large" @click="addToWatchlist(movie)">
-                    <el-icon><Plus /></el-icon> 加入想看
+                    <el-icon><Plus /></el-icon> {{ $t('home.addToWatchlist') }}
                   </el-button>
                 </div>
               </div>
@@ -48,8 +48,8 @@
     <!-- Popular Movies -->
     <section class="movies-section">
       <div class="section-header">
-        <h2>🔥 热门电影</h2>
-        <el-button text @click="router.push('/movies')">查看更多 →</el-button>
+        <h2>🔥 {{ $t('home.popular') }}</h2>
+        <el-button text @click="router.push('/movies')">{{ $t('common.seeMore') }}</el-button>
       </div>
 
       <div class="movies-grid" v-loading="tmdbStore.loading">
@@ -82,8 +82,8 @@
     <!-- Upcoming Movies -->
     <section class="movies-section">
       <div class="section-header">
-        <h2>🎬 即将上映</h2>
-        <el-button text @click="router.push('/movies?filter=upcoming')">查看更多 →</el-button>
+        <h2>🎬 {{ $t('home.upcoming') }}</h2>
+        <el-button text @click="router.push('/movies?filter=upcoming')">{{ $t('common.seeMore') }}</el-button>
       </div>
 
       <div class="movies-grid" v-loading="tmdbStore.loading">
@@ -116,8 +116,8 @@
     <!-- Top Rated -->
     <section class="movies-section">
       <div class="section-header">
-        <h2>⭐ 高分电影</h2>
-        <el-button text @click="router.push('/movies?filter=top_rated')">查看更多 →</el-button>
+        <h2>⭐ {{ $t('home.topRated') }}</h2>
+        <el-button text @click="router.push('/movies?filter=top_rated')">{{ $t('common.seeMore') }}</el-button>
       </div>
 
       <div class="movies-grid" v-loading="tmdbStore.loading">
@@ -151,8 +151,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useTMDBStore } from '@/stores/tmdb'
 import { useWatchlistStore } from '@/stores/watchlist'
@@ -160,6 +161,7 @@ import { Star, VideoPlay, Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import AppLayout from '@/layouts/AppLayout.vue'
 
+const { t, locale } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
 const tmdbStore = useTMDBStore()
@@ -167,11 +169,13 @@ const watchlistStore = useWatchlistStore()
 
 const heroMovies = computed(() => tmdbStore.popularMovies.slice(0, 5))
 
+watch(locale, () => {
+  loadHomeData()
+})
+
 const goToMovie = (movieId: number) => {
   router.push({ name: 'movie-detail', params: { id: movieId }})
 }
-
-
 
 const handleImageError = (event: Event) => {
   const img = event.target as HTMLImageElement
@@ -179,33 +183,29 @@ const handleImageError = (event: Event) => {
 }
 
 const formatDate = (dateString: string) => {
-  if (!dateString || dateString === '未知') return '未知'
+  if (!dateString || dateString === t('common.unknown')) return t('common.unknown')
   return new Date(dateString).getFullYear()
 }
 
 const addToWatchlist = async (movie: any) => {
   if (!authStore.isAuthenticated) {
-    ElMessage.warning('请先登录')
+    ElMessage.warning(t('movie.pleaseLoginFirst'))
     router.push('/login')
     return
   }
 
   try {
-    // 首先需要将TMDB电影添加到数据库
-    // 暂时使用TMDB ID，后端应该有相应的处理逻辑
     const result = await watchlistStore.toggleWatchlist(movie.id)
 
     if (result.added) {
-      ElMessage.success(`已将《${movie.title}》加入想看列表`)
+      ElMessage.success(t('movie.addedToWatchlist', { title: movie.title }))
     } else {
-      ElMessage.info(`已将《${movie.title}》从想看列表移除`)
+      ElMessage.info(t('movie.removedFromWatchlist', { title: movie.title }))
     }
   } catch (error) {
-    ElMessage.error('操作失败，请稍后重试')
+    ElMessage.error(t('movie.operationFailed'))
   }
 }
-
-
 
 const loadHomeData = async () => {
   try {
@@ -216,7 +216,7 @@ const loadHomeData = async () => {
     ])
   } catch (error) {
     console.error('Failed to load home data:', error)
-    ElMessage.error('加载数据失败')
+    ElMessage.error(t('movie.loadDataFailed'))
   }
 }
 
