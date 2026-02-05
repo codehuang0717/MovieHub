@@ -41,7 +41,7 @@
 
 ### 1. 克隆项目
 ```bash
-git clone <repository-url>
+git clone https://github.com/codehuang0717/MovieHub.git
 cd MyMovie
 ```
 
@@ -54,9 +54,11 @@ cd backend
 # 创建虚拟环境
 python -m venv venv
 
-# 激活虚拟环境
+# 激活venv虚拟环境
 # Windows
 venv\Scripts\activate
+#当然你也可以用conda环境，这里就不说怎么配置了
+
 # macOS / Linux
 source venv/bin/activate
 
@@ -66,9 +68,6 @@ pip install -r requirements.txt
 # 运行数据库迁移
 python manage.py migrate
 
-# 创建超级用户（可选）
-python manage.py createsuperuser
-
 # 启动后端服务
 python manage.py runserver
 ```
@@ -76,26 +75,15 @@ python manage.py runserver
 ### 3. 前端配置
 
 ```bash
-# 新开一个终端，进入前端目录
+# 1 新开一个终端，进入前端目录
 cd frontend/movie-app
 
-# 安装依赖
+# 2 安装依赖
 npm install
-
-# 复制环境变量文件并配置
-cp .env.example .env
-```
-
-编辑 `.env` 文件（可选）：
-```env
-# TMDB API 密钥（已有默认值）
-VITE_TMDB_API_KEY=2d89ddec4f8acd4c9f2036ea7321f326
-
-# 后端 API 地址（默认本地）
-VITE_API_BASE_URL=http://localhost:8000
 ```
 
 启动开发服务器：
+
 ```bash
 npm run dev
 ```
@@ -156,25 +144,7 @@ MyMovie/
 
 ## 🚀 部署指南
 
-### 开发环境部署
-
-#### 后端
-```bash
-cd backend
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver 0.0.0.0:8000
-```
-
-#### 前端
-```bash
-cd frontend/movie-app
-npm install
-npm run dev
-```
-
-### 生产环境部署
+### 生产环境部署（只想本地运行的不用管）
 
 #### 后端部署
 ```bash
@@ -285,12 +255,3 @@ A: 确保已登录，相关功能需要用户认证。
 
 ### Q: 如何配置跨域？
 A: 开发环境已配置 CORS，生产环境请在 `settings.py` 中配置 `CORS_ALLOWED_ORIGINS`。
-
-## 📞 联系方式
-
-- 项目地址：[GitHub Repository]
-- 问题反馈：[Issues]
-
----
-
-**Made with ❤️ by Your Team**
