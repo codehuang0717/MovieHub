@@ -14,9 +14,9 @@
         <router-link to="/movies" class="nav-item" active-class="nav-active">
           电影
         </router-link>
-        <router-link to="/categories" class="nav-item" active-class="nav-active">
-          分类
-        </router-link>
+<!--        <router-link to="/categories" class="nav-item" active-class="nav-active">-->
+<!--          分类-->
+<!--        </router-link>-->
         <router-link to="/search" class="nav-item" active-class="nav-active">
           搜索
         </router-link>
