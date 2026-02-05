@@ -57,7 +57,7 @@ python -m venv venv
 # 激活venv虚拟环境
 # Windows
 venv\Scripts\activate
-#当然你也可以用conda环境，这里就不说怎么配置了
+#当然你也可以用conda来管理环境
 
 # macOS / Linux
 source venv/bin/activate
