@@ -1,4 +1,4 @@
-# MyMovie - 电影管理系统
+# MovieHub - 电影管理系统
 
 一个基于 Vue 3 + Django REST Framework 的现代化电影信息管理与推荐系统，集成了 TMDB（The Movie Database）数据源，支持用户收藏、评分、评论、想看列表等完整功能，还有 AI 智能电影推荐助手！
 

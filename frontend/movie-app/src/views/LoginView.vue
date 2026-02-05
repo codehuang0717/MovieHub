@@ -260,7 +260,8 @@ onMounted(() => {
   border-radius: 12px;
   padding: 16px 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid #dcdfe6;
+  background: #ffffff;
   transition: all 0.3s ease;
 }
 
@@ -276,11 +277,22 @@ onMounted(() => {
 
 :deep(.el-input__inner) {
   font-size: 1rem;
-  color: #333;
+  color: #1a1a2e;
+  height: 24px;
+  line-height: 24px;
 }
 
 :deep(.el-input__inner::placeholder) {
-  color: #999;
+  color: #909399;
+}
+
+:deep(.el-input__prefix),
+:deep(.el-input__suffix) {
+  color: #909399;
+}
+
+:deep(.el-form-item__error) {
+  color: #f56c6c;
 }
 
 .login-button {
