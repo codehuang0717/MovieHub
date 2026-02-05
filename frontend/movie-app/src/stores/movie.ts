@@ -96,15 +96,45 @@ export const useMovieStore = defineStore('movie', () => {
   async function fetchMoviesByCategory(categoryId: number) {
     loading.value = true
     error.value = null
-    
+
     try {
-      const response = await apiClient.get(`/movies/`, { 
-        params: { category: categoryId } 
+      const response = await apiClient.get(`/movies/`, {
+        params: { category: categoryId }
       })
       movies.value = response.data.results || response.data
       return { success: true, data: response.data }
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch movies by category'
+      return { success: false, error: error.value }
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function fetchSimilarMovies(movieId: number) {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await apiClient.get(`/recommendations/similar/${movieId}/`)
+      return { success: true, data: response.data.results || [] }
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Failed to fetch similar movies'
+      return { success: false, error: error.value }
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function fetchPersonalizedRecommendations() {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await apiClient.get('/recommendations/personalized/')
+      return { success: true, data: response.data.results || [] }
+    } catch (err) {
+      error.value = err.response?.data?.message || 'Failed to fetch personalized recommendations'
       return { success: false, error: error.value }
     } finally {
       loading.value = false
@@ -121,6 +151,8 @@ export const useMovieStore = defineStore('movie', () => {
     fetchMovieById,
     fetchCategories,
     searchMovies,
-    fetchMoviesByCategory
+    fetchMoviesByCategory,
+    fetchSimilarMovies,
+    fetchPersonalizedRecommendations
   }
 })

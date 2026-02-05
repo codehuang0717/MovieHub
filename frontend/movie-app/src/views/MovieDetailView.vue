@@ -273,23 +273,23 @@
             </div>
           </section>
 
-          <!-- Similar Movies -->
+          <!-- Recommended Movies -->
           <section class="content-section">
-            <h3>相似推荐</h3>
-            <div class="similar-movies">
+            <h3>为你推荐</h3>
+            <div class="recommended-movies">
               <div
                 v-for="movie in similarMovies"
                 :key="movie.id"
-                class="similar-movie-card"
+                class="recommended-movie-card"
                 @click="goToMovie(movie.id)"
               >
-                <div class="similar-poster">
+                <div class="recommended-poster">
                   <img :src="movie.poster_path" :alt="movie.title" @error="handleImageError" />
                 </div>
-                <div class="similar-info">
+                <div class="recommended-info">
                   <h4>{{ movie.title }}</h4>
                   <p>{{ formatDate(movie.release_date) }}</p>
-                  <div class="similar-rating">
+                  <div class="recommended-rating">
                     <el-icon><Star /></el-icon>
                     {{ movie.vote_average?.toFixed(1) }}
                   </div>
@@ -712,7 +712,6 @@ const createAndAddToCollection = async () => {
 
 const loadMovieData = async () => {
   try {
-    // Load main movie details first
     await tmdbStore.fetchMovieDetails(movieId.value)
   } catch (error) {
     console.error('Failed to load movie details:', error)
@@ -720,28 +719,22 @@ const loadMovieData = async () => {
     return
   }
 
-  // Load similar movies separately (don't fail if this fails)
   try {
-    const axios = require('axios')
-    const TMDB_API_KEY = '2d89ddec4f8acd4c9f2036ea7321f326'
-    const TMDB_BASE_URL = 'https://api.themoviedb.org/3'
-
-    const response = await axios.get(`${TMDB_BASE_URL}/movie/${movieId.value}/similar`, {
-      params: {
-        api_key: TMDB_API_KEY,
-        language: 'zh-CN'
+    const tmdbResult = await tmdbStore.fetchRecommendedMovies(movieId.value)
+    if (tmdbResult && tmdbResult.length > 0) {
+      similarMovies.value = tmdbResult.slice(0, 6)
+    } else {
+      try {
+        const similarResult = await tmdbStore.fetchSimilarMovies(movieId.value)
+        similarMovies.value = similarResult.slice(0, 6)
+      } catch (similarError) {
+        console.error('Failed to load similar movies:', similarError)
+        similarMovies.value = []
       }
-    })
-
-    similarMovies.value = response.data.results.map((movie: any) => ({
-      ...movie,
-      poster_path: tmdbStore.getImageUrl(movie.poster_path, 'w300'),
-      release_date: movie.release_date || '未知',
-      vote_average: movie.vote_average || 0
-    })).slice(0, 6)
+    }
   } catch (error) {
-    console.error('Failed to load similar movies:', error)
-    // Don't show error message for similar movies failure
+    console.error('Failed to load recommended movies:', error)
+    similarMovies.value = []
   }
 
   await Promise.all([loadRatings(), loadComments()])
@@ -1304,13 +1297,13 @@ watch(movieId, () => {
 }
 
 /* Similar Movies */
-.similar-movies {
+.recommended-movies {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 24px;
 }
 
-.similar-movie-card {
+.recommended-movie-card {
   cursor: pointer;
   transition: transform 0.3s ease;
   border-radius: 8px;
@@ -1318,44 +1311,44 @@ watch(movieId, () => {
   background: #161b22;
 }
 
-.similar-movie-card:hover {
+.recommended-movie-card:hover {
   transform: translateY(-8px);
 }
 
-.similar-poster {
+.recommended-poster {
   aspect-ratio: 2/3;
   overflow: hidden;
 }
 
-.similar-poster img {
+.recommended-poster img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
 
-.similar-movie-card:hover .similar-poster img {
+.recommended-movie-card:hover .recommended-poster img {
   transform: scale(1.05);
 }
 
-.similar-info {
+.recommended-info {
   padding: 16px;
 }
 
-.similar-info h4 {
+.recommended-info h4 {
   margin: 0 0 8px 0;
   color: #f0f6fc;
   font-size: 1rem;
   line-height: 1.4;
 }
 
-.similar-info p {
+.recommended-info p {
   margin: 0 0 8px 0;
   color: #8b949e;
   font-size: 0.9rem;
 }
 
-.similar-rating {
+.recommended-rating {
   display: flex;
   align-items: center;
   gap: 4px;

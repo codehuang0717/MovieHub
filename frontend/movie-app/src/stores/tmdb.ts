@@ -339,6 +339,44 @@ export const useTMDBStore = defineStore('tmdb', () => {
     }
   }
 
+  const fetchSimilarMovies = async (movieId: number) => {
+    try {
+      const response = await tmdbClient.get(`/movie/${movieId}/similar`, {
+        params: { language: 'zh-CN' }
+      })
+
+      return response.data.results.map((movie: any) => ({
+        id: movie.id,
+        title: movie.title,
+        poster_path: getImageUrl(movie.poster_path, 'w300'),
+        release_date: movie.release_date || '未知',
+        vote_average: movie.vote_average || 0
+      })).slice(0, 6)
+    } catch (err) {
+      error.value = '获取相似电影失败'
+      throw err
+    }
+  }
+
+  const fetchRecommendedMovies = async (movieId: number) => {
+    try {
+      const response = await tmdbClient.get(`/movie/${movieId}/recommendations`, {
+        params: { language: 'zh-CN' }
+      })
+
+      return response.data.results.map((movie: any) => ({
+        id: movie.id,
+        title: movie.title,
+        poster_path: getImageUrl(movie.poster_path, 'w300'),
+        release_date: movie.release_date || '未知',
+        vote_average: movie.vote_average || 0
+      })).slice(0, 6)
+    } catch (err) {
+      error.value = '获取推荐电影失败'
+      throw err
+    }
+  }
+
   return {
     popularMovies,
     topRatedMovies,
@@ -359,6 +397,8 @@ export const useTMDBStore = defineStore('tmdb', () => {
     searchMovies,
     fetchMovieDetails,
     fetchMoviesByGenre,
-    fetchDiscoverMovies
+    fetchDiscoverMovies,
+    fetchSimilarMovies,
+    fetchRecommendedMovies
   }
 })
