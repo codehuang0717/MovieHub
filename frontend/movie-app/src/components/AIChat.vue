@@ -163,7 +163,7 @@
         <div class="setting-group" v-if="aiService === 'openai'">
           <label>OpenAI API Key</label>
           <el-input
-            v-model="openaiKey"
+            v-model="apiKey"
             type="password"
             :placeholder="'Enter OpenAI API Key'"
             show-password
