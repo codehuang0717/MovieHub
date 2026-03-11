@@ -22,8 +22,8 @@ echo "Running database migrations..."
 docker-compose exec -T backend python manage.py migrate
 
 # Collect static files
-echo "Collecting static files..."
-docker-compose exec -T backend python manage.py collectstatic --noinput
+# echo "Collecting static files..."
+# docker-compose exec -T backend python manage.py collectstatic --noinput
 
 echo "======================================"
 echo "Deployment Complete!"
