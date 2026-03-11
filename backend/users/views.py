@@ -76,6 +76,17 @@ class UserProfileView(RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
+    def update(self, request, *args, **kwargs):
+        # 恢复使用默认的 update 逻辑，因为我们已经在前端切断了 avatar 数据
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data)
+
 
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])

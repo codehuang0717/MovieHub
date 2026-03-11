@@ -250,8 +250,14 @@ const onAvatarRemoved = (data: any) => {
 const updateProfile = async () => {
   updatingProfile.value = true
   try {
-    console.log('Submitting profile form:', profileForm.value)
-    const result = await authStore.updateProfile(profileForm.value)
+    // 清洗数据，剔除 avatar 以免引发后端的 ImageField 验证错误
+    const dataToSubmit = JSON.parse(JSON.stringify(profileForm.value))
+    if (dataToSubmit.profile && 'avatar' in dataToSubmit.profile) {
+      delete dataToSubmit.profile.avatar
+    }
+    
+    console.log('Submitting profile form:', dataToSubmit)
+    const result = await authStore.updateProfile(dataToSubmit)
     if (result.success) {
       ElMessage.success(t('profile.updateSuccess'))
       console.log('Profile update successful:', result.data)

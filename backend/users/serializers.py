@@ -5,12 +5,12 @@ from .models import UserProfile
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    avatar = serializers.ImageField(required=False, allow_null=True)
+    avatar = serializers.ImageField(required=False, allow_null=True, read_only=True)
 
     class Meta:
         model = UserProfile
         fields = ["avatar", "bio", "created_at", "updated_at"]
-        read_only_fields = ["created_at", "updated_at"]
+        read_only_fields = ["created_at", "updated_at", "avatar"]
 
     def to_representation(self, instance):
         """将avatar字段转换为完整URL"""
@@ -82,10 +82,11 @@ class UserLoginSerializer(serializers.Serializer):
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(required=False)
+    username = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
-        fields = ["email", "first_name", "last_name", "profile"]
+        fields = ["username", "email", "first_name", "last_name", "profile"]
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop("profile", None)
@@ -97,6 +98,13 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
         # 然后更新profile信息
         if profile_data is not None:
+            # 去除可能包含域名的URL或/media/前缀，因为ImageField期望的是相对路径或文件对象
+            if "avatar" in profile_data and isinstance(profile_data["avatar"], str):
+                if profile_data["avatar"].startswith("http") or profile_data[
+                    "avatar"
+                ].startswith("/media/"):
+                    profile_data.pop("avatar")
+
             profile_serializer = UserProfileSerializer(
                 instance.profile, data=profile_data, partial=True
             )
