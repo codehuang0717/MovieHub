@@ -5,16 +5,16 @@
         <div class="chat-header">
           <div class="chat-header-info">
             <el-icon class="ai-icon"><ChatDotRound /></el-icon>
-            <span>AI电影推荐</span>
+            <span>{{ $t('aiChat.title') }}</span>
           </div>
           <div class="chat-header-actions">
-            <el-button text circle size="small" @click="clearChat" title="清除聊天">
+            <el-button text circle size="small" @click="clearChatAction" :title="$t('aiChat.clearChat')">
               <el-icon><Delete /></el-icon>
             </el-button>
-            <el-button text circle size="small" @click="showSettings = true" title="设置">
+            <el-button text circle size="small" @click="showSettings = true" :title="$t('aiChat.settings')">
               <el-icon><Setting /></el-icon>
             </el-button>
-            <el-button text circle size="small" @click="closeChat" title="关闭">
+            <el-button text circle size="small" @click="closeChat" :title="$t('aiChat.close')">
               <el-icon><Close /></el-icon>
             </el-button>
           </div>
@@ -25,32 +25,32 @@
             <div class="welcome-avatar">
               <el-icon><ChatDotRound /></el-icon>
             </div>
-            <p class="welcome-title">AI电影推荐助手</p>
-            <p class="welcome-desc">告诉我你想看什么电影，我来帮你推荐！</p>
+            <p class="welcome-title">{{ $t('aiChat.assistantTitle') }}</p>
+            <p class="welcome-desc">{{ $t('aiChat.welcomeDesc') }}</p>
 
             <div class="user-stats-panel" v-if="isLoggedIn && userStats">
               <div class="stats-header">
                 <el-icon><User /></el-icon>
-                <span>你的观影数据</span>
+                <span>{{ $t('aiChat.yourData') }}</span>
               </div>
               <div class="stats-row">
                 <div class="stat-item">
                   <span class="stat-value">{{ userStats.collections_count }}</span>
-                  <span class="stat-label">收藏</span>
+                  <span class="stat-label">{{ $t('aiChat.collections') }}</span>
                 </div>
                 <div class="stat-item">
                   <span class="stat-value">{{ userStats.ratings_count }}</span>
-                  <span class="stat-label">评分</span>
+                  <span class="stat-label">{{ $t('aiChat.ratings') }}</span>
                 </div>
               </div>
               <div class="stats-genres" v-if="userStats.favorite_genres?.length">
                 <el-icon><MagicStick /></el-icon>
-                <span>喜欢 {{ userStats.favorite_genres.join(' · ') }}</span>
+                <span>{{ $t('aiChat.like') }} {{ userStats.favorite_genres.join(' · ') }}</span>
               </div>
             </div>
             <div class="login-hint" v-else>
               <el-icon><Warning /></el-icon>
-              <span>登录后可获得个性化推荐</span>
+              <span>{{ $t('aiChat.loginHint') }}</span>
             </div>
           </div>
 
@@ -108,16 +108,16 @@
               v-for="prompt in quickPrompts"
               :key="prompt.label"
               class="quick-bubble"
-              @click="useQuickPrompt(prompt.label)"
+              @click="useQuickPromptAction(prompt.label)"
             >
               <el-icon><component :is="prompt.icon" /></el-icon>
-              <span>{{ prompt.label }}</span>
+              <span>{{ $t(prompt.i18nKey) }}</span>
             </div>
           </div>
           <div class="input-row">
             <el-input
               v-model="userInput"
-              placeholder="输入电影类型或描述..."
+              :placeholder="$t('aiChat.inputPlaceholder')"
               @keyup.enter="sendMessage"
               :disabled="loading"
               size="large"
@@ -138,62 +138,62 @@
       <el-icon v-else size="28"><ChatDotRound /></el-icon>
     </div>
 
-    <el-dialog v-model="showSettings" title="AI设置" width="400px" class="settings-dialog">
+    <el-dialog v-model="showSettings" :title="$t('aiChat.settingsTitle')" width="400px" class="settings-dialog">
       <div class="settings-content">
         <div class="setting-group">
-          <label>推荐引擎</label>
+          <label>{{ $t('aiChat.recommendationEngine') }}</label>
           <div class="engine-options">
             <div
               :class="['engine-option', { active: aiService === 'smart' }]"
               @click="aiService = 'smart'"
             >
               <el-icon><MagicStick /></el-icon>
-              <span class="engine-name">智能推荐</span>
-              <span class="engine-desc">基于你的数据本地计算</span>
+              <span>{{ $t('aiChat.smartRecommend') }}</span>
             </div>
             <div
               :class="['engine-option', { active: aiService === 'openai' }]"
               @click="aiService = 'openai'"
             >
-              <el-icon><ChatDotRound /></el-icon>
-              <span class="engine-name">OpenAI GPT</span>
-              <span class="engine-desc">更智能的AI推荐</span>
+              <el-icon><Cpu /></el-icon>
+              <span>OpenAI GPT</span>
             </div>
           </div>
         </div>
 
         <div class="setting-group" v-if="aiService === 'openai'">
-          <label>API Key</label>
+          <label>OpenAI API Key</label>
           <el-input
-            v-model="apiKey"
+            v-model="openaiKey"
             type="password"
-            placeholder="sk-..."
+            :placeholder="$t('aiChat.apiKeyPlaceholder')"
             show-password
           />
-          <div class="setting-tip">
-            <el-icon><InfoFilled /></el-icon>
-            <span>请确保API Key有效且有余额</span>
-          </div>
+          <div class="setting-hint">{{ $t('aiChat.apiKeyHint') }}</div>
         </div>
       </div>
       <template #footer>
-        <el-button @click="showSettings = false">取消</el-button>
-        <el-button type="primary" @click="saveSettings">确定</el-button>
+        <span class="dialog-footer">
+          <el-button @click="showSettings = false">{{ $t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="saveSettings">{{ $t('common.save') }}</el-button>
+        </span>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, onMounted, computed } from 'vue'
+import { ref, nextTick, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import {
   ChatDotRound, Close, Setting, Position, User, Star,
-  Loading, Delete, MagicStick, Film, Ghost, Heart, Compass, Warning, InfoFilled
+  Delete, MagicStick, Film, Compass, Warning, InfoFilled, Cpu
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
+
+const { t, locale } = useI18n()
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -227,45 +227,32 @@ const userStats = ref<UserStats | null>(null)
 const messages = ref<Array<{ role: string; content?: string; type?: string; movies?: Movie[] }>>([])
 
 const quickPrompts = [
-  { label: '科幻', icon: 'Compass' },
-  { label: '爱情', icon: 'Heart' },
-  { label: '喜剧', icon: 'Film' },
-  { label: '悬疑', icon: 'Ghost' },
-  { label: '动画', icon: 'Film' }
+  { label: '科幻大片', icon: Compass, i18nKey: 'aiChat.promptSciFi' },
+  { label: '轻松喜剧', icon: MagicStick, i18nKey: 'aiChat.promptComedy' },
+  { label: '高智商悬疑', icon: Film, i18nKey: 'aiChat.promptSuspense' }
 ]
 
-const knownMovies: Record<string, number> = {
-  '寻梦环游记': 447365,
-  'coco': 447365,
-  '超能陆战队': 177572,
-  'big hero 6': 177572,
-  '疯狂动物城': 243688,
-  'zootopia': 243688,
-  '蜘蛛侠：平行宇宙': 324857,
-  'into the spider-verse': 324857,
-  '你的名字': 372058,
-  '星际穿越': 157336,
-  '盗梦空间': 155,
-  '蝙蝠侠：黑暗骑士': 27205,
-  '肖申克的救赎': 278,
-  '泰坦尼克号': 11216,
-  '爱在黎明破晓时': 49026,
-  '花束般的恋爱': 452876,
-  '哈尔的移动城堡': 4935,
-  '头脑特工队': 63844,
-  '看不见的客人': 550988,
-  '恐怖游轮': 3594,
-  '教父': 238,
-  '重启人生': 497572,
-  '玩具总动员': 862,
-  '狮子王': 11145
+const useQuickPromptAction = (promptLabel: string) => {
+  const promptItem = quickPrompts.find(p => p.label === promptLabel)
+  if (promptItem) {
+    userInput.value = t(promptItem.i18nKey)
+  } else {
+    userInput.value = promptLabel
+  }
+  sendMessage()
+}
+
+const clearChatAction = () => {
+  messages.value = []
+  localStorage.removeItem(STORAGE_KEY)
+  ElMessage.success(t('aiChat.clearChat'))
 }
 
 const isLoggedIn = computed(() => authStore.isAuthenticated)
 const accessToken = computed(() => authStore.accessToken)
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api',
   headers: { 'Content-Type': 'application/json' }
 })
 
@@ -295,15 +282,20 @@ const toggleChat = async () => {
   }
 }
 
-const useQuickPrompt = (prompt: string) => {
-  userInput.value = prompt
+const useQuickPrompt = (promptLabel: string) => {
+  const promptItem = quickPrompts.find(p => p.label === promptLabel)
+  if (promptItem) {
+    userInput.value = t(promptItem.i18nKey)
+  } else {
+    userInput.value = promptLabel
+  }
   sendMessage()
 }
 
 const clearChat = () => {
   messages.value = []
   localStorage.removeItem(STORAGE_KEY)
-  ElMessage.success('聊天记录已清除')
+  ElMessage.success(t('aiChat.clearChat'))
 }
 
 const loadUserStats = async () => {

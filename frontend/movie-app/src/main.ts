@@ -16,7 +16,7 @@ import { useAuthStore } from './stores/auth'
 
 const i18n = createI18n({
   legacy: false,
-  locale: localStorage.getItem('locale') || 'zh',
+  locale: localStorage.getItem('locale') || 'en',
   messages: {
     en,
     zh

@@ -1,4 +1,26 @@
 {
+  "aiChat": {
+    "title": "AI电影推荐",
+    "clearChat": "清除聊天",
+    "settings": "设置",
+    "close": "关闭",
+    "assistantTitle": "AI电影推荐助手",
+    "welcomeDesc": "告诉我你想看什么电影，我来帮你推荐！",
+    "yourData": "你的观影数据",
+    "collections": "收藏",
+    "ratings": "评分",
+    "like": "喜欢",
+    "loginHint": "登录后可获得个性化推荐",
+    "inputPlaceholder": "输入电影类型或描述...",
+    "settingsTitle": "AI设置",
+    "recommendationEngine": "推荐引擎",
+    "smartRecommend": "智能推荐",
+    "apiKeyPlaceholder": "输入API Key",
+    "apiKeyHint": "API Key 仅存储在本地，不会上传",
+    "promptSciFi": "推荐几部科幻大片",
+    "promptComedy": "想看轻松的喜剧",
+    "promptSuspense": "高智商悬疑电影"
+  },
   "common": {
     "home": "首页",
     "movies": "电影",

@@ -1,4 +1,26 @@
 {
+  "aiChat": {
+    "title": "AI Movie Assistant",
+    "clearChat": "Clear Chat",
+    "settings": "Settings",
+    "close": "Close",
+    "assistantTitle": "AI Movie Assistant",
+    "welcomeDesc": "Tell me what you want to watch, and I'll recommend movies for you!",
+    "yourData": "Your Watch History",
+    "collections": "Collections",
+    "ratings": "Ratings",
+    "like": "You like",
+    "loginHint": "Login to get personalized recommendations",
+    "inputPlaceholder": "Enter movie genre or description...",
+    "settingsTitle": "AI Settings",
+    "recommendationEngine": "Recommendation Engine",
+    "smartRecommend": "Smart Recommend",
+    "apiKeyPlaceholder": "Enter API Key",
+    "apiKeyHint": "API Key is stored locally and will not be uploaded",
+    "promptSciFi": "Recommend some Sci-Fi blockbusters",
+    "promptComedy": "I want to watch a relaxing comedy",
+    "promptSuspense": "High-IQ suspense movies"
+  },
   "common": {
     "home": "Home",
     "movies": "Movies",
