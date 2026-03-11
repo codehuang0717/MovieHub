@@ -318,9 +318,9 @@ const loadUserStats = async () => {
         }
         highRatedMovies.push({
           id: movie.id || rating.movie_id || 0,
-          title: movie.title || rating.movie_title || '未知电影',
+          title: movie.title || rating.movie_title || 'Unknown Movie',
           poster_path: movie.poster || movie.poster_path || '/placeholder-movie.svg',
-          release_date: movie.release_date || rating.release_date || '未知',
+          release_date: movie.release_date || rating.release_date || 'Unknown',
           vote_average: movie.average_rating || score || 0
         })
       }
@@ -363,7 +363,7 @@ const sendMessage = async () => {
   } catch (error) {
     messages.value.push({
       role: 'assistant',
-      content: '抱歉遇到了问题，请稍后再试。',
+      content: 'Sorry, an error occurred. Please try again later.',
       type: 'text'
     })
   } finally {
@@ -395,15 +395,15 @@ const getSmartRecommendations = async (query: string) => {
   let recommendations: Movie[] = []
 
   const genreKeywords: Record<string, string[]> = {
-    '科幻': ['科幻', 'science', 'sci-fi', 'science fiction'],
-    '爱情': ['爱情', 'romance', '浪漫', '恋爱'],
-    '喜剧': ['喜剧', 'comedy', '搞笑', '幽默'],
-    '悬疑': ['悬疑', 'thriller', '惊悚', '推理'],
-    '动作': ['动作', 'action', '打斗'],
-    '动画': ['动画', 'animation', '动漫', '卡通'],
-    '恐怖': ['恐怖', 'horror', '害怕'],
-    '战争': ['战争', 'war', '军事'],
-    '纪录片': ['纪录', 'documentary']
+    'Sci-Fi': ['scifi', 'science', 'sci-fi', 'science fiction', '科幻'],
+    'Romance': ['romance', 'love', '浪漫', '恋爱'],
+    'Comedy': ['comedy', 'funny', '搞笑', '幽默'],
+    'Thriller': ['thriller', 'suspense', '惊悚', '推理'],
+    'Action': ['action', '打斗'],
+    'Animation': ['animation', 'anime', '动漫', '卡通'],
+    'Horror': ['horror', 'scary', '害怕'],
+    'War': ['war', 'military', '军事'],
+    'Documentary': ['documentary', '纪录']
   }
 
   let matchedGenre = ''
@@ -415,45 +415,45 @@ const getSmartRecommendations = async (query: string) => {
   }
 
   const movieDatabase: Record<string, Movie[]> = {
-    '科幻': [
-      { id: 157336, title: '星际穿越', poster_path: 'https://image.tmdb.org/t/p/w200/gEU2QniL6E8ahG0Sm62X719qVJh.jpg', release_date: '2014-11-05', vote_average: 8.6 },
-      { id: 155, title: '盗梦空间', poster_path: 'https://image.tmdb.org/t/p/w200/9gk7admalRg2G2d5p4nMDa3ysjA.jpg', release_date: '2010-07-14', vote_average: 8.8 },
-      { id: 27205, title: '蝙蝠侠：黑暗骑士崛起', poster_path: 'https://image.tmdb.org/t/p/w200/9WJE5xv7k6K8z2Y1t0K1K5G5Z8k.jpg', release_date: '2012-07-18', vote_average: 8.4 }
+    'Sci-Fi': [
+      { id: 157336, title: 'Interstellar', poster_path: 'https://image.tmdb.org/t/p/w200/gEU2QniL6E8ahG0Sm62X719qVJh.jpg', release_date: '2014-11-05', vote_average: 8.6 },
+      { id: 155, title: 'Inception', poster_path: 'https://image.tmdb.org/t/p/w200/9gk7admalRg2G2d5p4nMDa3ysjA.jpg', release_date: '2010-07-14', vote_average: 8.8 },
+      { id: 27205, title: 'The Dark Knight Rises', poster_path: 'https://image.tmdb.org/t/p/w200/9WJE5xv7k6K8z2Y1t0K1K5G5Z8k.jpg', release_date: '2012-07-18', vote_average: 8.4 }
     ],
-    '爱情': [
-      { id: 11216, title: '泰坦尼克号', poster_path: 'https://image.tmdb.org/t/p/w200/9xjZS2rlVxm8SFx8kPC3aO9mnrz.jpg', release_date: '1997-12-18', vote_average: 7.9 },
-      { id: 49026, title: '爱在黎明破晓时', poster_path: 'https://image.tmdb.org/t/p/w200/gC1n7kvLSkpuFs6hZhYfbY7rYvq.jpg', release_date: '1995-04-20', vote_average: 8.0 },
-      { id: 452876, title: '花束般的恋爱', poster_path: 'https://image.tmdb.org/t/p/w200/w2PMyoyLU22YvrGK3smVM9fW1jj.jpg', release_date: '2021-01-29', vote_average: 7.9 }
+    'Romance': [
+      { id: 11216, title: 'Titanic', poster_path: 'https://image.tmdb.org/t/p/w200/9xjZS2rlVxm8SFx8kPC3aO9mnrz.jpg', release_date: '1997-12-18', vote_average: 7.9 },
+      { id: 49026, title: 'Before Sunrise', poster_path: 'https://image.tmdb.org/t/p/w200/gC1n7kvLSkpuFs6hZhYfbY7rYvq.jpg', release_date: '1995-04-20', vote_average: 8.0 },
+      { id: 452876, title: 'A Bread of Love', poster_path: 'https://image.tmdb.org/t/p/w200/w2PMyoyLU22YvrGK3smVM9fW1jj.jpg', release_date: '2021-01-29', vote_average: 7.9 }
     ],
-    '喜剧': [
-      { id: 497572, title: '重启人生', poster_path: 'https://image.tmdb.org/t/p/w200/h5UzYZquMwO9FVn15R2eK2itmHu.jpg', release_date: '2022-11-04', vote_average: 8.5 },
-      { id: 429617, title: '蜘蛛侠：平行宇宙', poster_path: 'https://image.tmdb.org/t/p/w200/3IlKqUFCh6cCDM2WN4Ug7UG0FHs.jpg', release_date: '2018-12-07', vote_average: 8.4 },
-      { id: 438631, title: '唐人街探案', poster_path: 'https://image.tmdb.org/t/p/w200/iqZ4IKW7lU9zLqCMc9WBB1lZQUZ.jpg', release_date: '2015-12-31', vote_average: 7.5 }
+    'Comedy': [
+      { id: 497572, title: 'Restart Life', poster_path: 'https://image.tmdb.org/t/p/w200/h5UzYZquMwO9FVn15R2eK2itmHu.jpg', release_date: '2022-11-04', vote_average: 8.5 },
+      { id: 429617, title: 'Spider-Man: Into the Spider-Verse', poster_path: 'https://image.tmdb.org/t/p/w200/3IlKqUFCh6cCDM2WN4Ug7UG0FHs.jpg', release_date: '2018-12-07', vote_average: 8.4 },
+      { id: 438631, title: 'Detective Chinatown', poster_path: 'https://image.tmdb.org/t/p/w200/iqZ4IKW7lU9zLqCMc9WBB1lZQUZ.jpg', release_date: '2015-12-31', vote_average: 7.5 }
     ],
-    '悬疑': [
-      { id: 278, title: '肖申克的救赎', poster_path: 'https://image.tmdb.org/t/p/w200/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg', release_date: '1994-09-23', vote_average: 9.3 },
-      { id: 550988, title: '看不见的客人', poster_path: 'https://image.tmdb.org/t/p/w200/6hgI4j9o3k7v7bT5q8j4T6bX8k0.jpg', release_date: '2016-09-06', vote_average: 8.1 },
-      { id: 3594, title: '恐怖游轮', poster_path: 'https://image.tmdb.org/t/p/w200/g0LDPJdcE6iCM9tG2f5Kbz0CNyN.jpg', release_date: '2009-10-16', vote_average: 7.5 }
+    'Thriller': [
+      { id: 278, title: 'The Shawshank Redemption', poster_path: 'https://image.tmdb.org/t/p/w200/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg', release_date: '1994-09-23', vote_average: 9.3 },
+      { id: 550988, title: 'The Invisible Guest', poster_path: 'https://image.tmdb.org/t/p/w200/6hgI4j9o3k7v7bT5q8j4T6bX8k0.jpg', release_date: '2016-09-06', vote_average: 8.1 },
+      { id: 3594, title: 'Triangle', poster_path: 'https://image.tmdb.org/t/p/w200/g0LDPJdcE6iCM9tG2f5Kbz0CNyN.jpg', release_date: '2009-10-16', vote_average: 7.5 }
     ],
-    '动作': [
-      { id: 27205, title: '蝙蝠侠：黑暗骑士', poster_path: 'https://image.tmdb.org/t/p/w200/9WJE5xv7k6K8z2Y1t0K1K5G5Z8k.jpg', release_date: '2008-07-16', vote_average: 9.0 },
-      { id: 238, title: '教父', poster_path: 'https://image.tmdb.org/t/p/w200/3TlQYNuCU8g9U6XvX3pMlVCT5vZ.jpg', release_date: '1972-03-14', vote_average: 8.7 },
-      { id: 299534, title: '美国队长2', poster_path: 'https://image.tmdb.org/t/p/w200/tV8dYDW5b1K6zhFfLc3CvJkd1qU.jpg', release_date: '2014-03-20', vote_average: 7.7 }
+    'Action': [
+      { id: 27205, title: 'The Dark Knight', poster_path: 'https://image.tmdb.org/t/p/w200/9WJE5xv7k6K8z2Y1t0K1K5G5Z8k.jpg', release_date: '2008-07-16', vote_average: 9.0 },
+      { id: 238, title: 'The Godfather', poster_path: 'https://image.tmdb.org/t/p/w200/3TlQYNuCU8g9U6XvX3pMlVCT5vZ.jpg', release_date: '1972-03-14', vote_average: 8.7 },
+      { id: 299534, title: 'Captain America: The Winter Soldier', poster_path: 'https://image.tmdb.org/t/p/w200/tV8dYDW5b1K6zhFfLc3CvJkd1qU.jpg', release_date: '2014-03-20', vote_average: 7.7 }
     ],
-    '动画': [
-      { id: 372058, title: '你的名字', poster_path: 'https://image.tmdb.org/t/p/w200/q719jXXEzOoYaps6babgKnONONX.jpg', release_date: '2016-08-26', vote_average: 8.5 },
-      { id: 4935, title: '哈尔的移动城堡', poster_path: 'https://image.tmdb.org/t/p/w200/v9yGJquH7ZXckXP4VPPV77XxX1G.jpg', release_date: '2004-11-20', vote_average: 8.2 },
-      { id: 63844, title: '头脑特工队', poster_path: 'https://image.tmdb.org/t/p/w200/oDB4HBK89cw8U1jQXvP2EIVn6ZU.jpg', release_date: '2015-06-09', vote_average: 8.1 }
+    'Animation': [
+      { id: 372058, title: 'Your Name', poster_path: 'https://image.tmdb.org/t/p/w200/q719jXXEzOoYaps6babgKnONONX.jpg', release_date: '2016-08-26', vote_average: 8.5 },
+      { id: 4935, title: "Howl's Moving Castle", poster_path: 'https://image.tmdb.org/t/p/w200/v9yGJquH7ZXckXP4VPPV77XxX1G.jpg', release_date: '2004-11-20', vote_average: 8.2 },
+      { id: 63844, title: 'Inside Out', poster_path: 'https://image.tmdb.org/t/p/w200/oDB4HBK89cw8U1jQXvP2EIVn6ZU.jpg', release_date: '2015-06-09', vote_average: 8.1 }
     ],
-    '恐怖': [
-      { id: 439503, title: '遗传厄运', poster_path: 'https://image.tmdb.org/t/p/w200/tj1hSyu3LLM5X0GftBEtD2M2X3N.jpg', release_date: '2018-06-07', vote_average: 7.3 },
-      { id: 546554, title: '昆池岩', poster_path: 'https://image.tmdb.org/t/p/w200/pO4M7pTcv2f2X7E6a3wB4k6u3x7.jpg', release_date: '2018-03-28', vote_average: 6.9 },
-      { id: 487310, title: '修女', poster_path: 'https://image.tmdb.org/t/p/w200/5X3Cg2Z1Y1Y1Y6Y1Y1Y1Y1Y1Y1.jpg', release_date: '2018-09-06', vote_average: 5.9 }
+    'Horror': [
+      { id: 439503, title: 'Hereditary', poster_path: 'https://image.tmdb.org/t/p/w200/tj1hSyu3LLM5X0GftBEtD2M2X3N.jpg', release_date: '2018-06-07', vote_average: 7.3 },
+      { id: 546554, title: 'Gonjiam: Haunted Asylum', poster_path: 'https://image.tmdb.org/t/p/w200/pO4M7pTcv2f2X7E6a3wB4k6u3x7.jpg', release_date: '2018-03-28', vote_average: 6.9 },
+      { id: 487310, title: 'The Nun', poster_path: 'https://image.tmdb.org/t/p/w200/5X3Cg2Z1Y1Y1Y6Y1Y1Y1Y1Y1Y1.jpg', release_date: '2018-09-06', vote_average: 5.9 }
     ],
     'default': [
-      { id: 27205, title: '蝙蝠侠：黑暗骑士', poster_path: 'https://image.tmdb.org/t/p/w200/9WJE5xv7k6K8z2Y1t0K1K5G5Z8k.jpg', release_date: '2008-07-16', vote_average: 9.0 },
-      { id: 238, title: '教父', poster_path: 'https://image.tmdb.org/t/p/w200/3TlQYNuCU8g9U6XvX3pMlVCT5vZ.jpg', release_date: '1972-03-14', vote_average: 8.7 },
-      { id: 680, title: '搏击俱乐部', poster_path: 'https://image.tmdb.org/t/p/w200/p8F2G3B4V6F8E7D6S5A4B3C2D1.jpg', release_date: '1999-10-15', vote_average: 8.4 }
+      { id: 27205, title: 'The Dark Knight', poster_path: 'https://image.tmdb.org/t/p/w200/9WJE5xv7k6K8z2Y1t0K1K5G5Z8k.jpg', release_date: '2008-07-16', vote_average: 9.0 },
+      { id: 238, title: 'The Godfather', poster_path: 'https://image.tmdb.org/t/p/w200/3TlQYNuCU8g9U6XvX3pMlVCT5vZ.jpg', release_date: '1972-03-14', vote_average: 8.7 },
+      { id: 680, title: 'Fight Club', poster_path: 'https://image.tmdb.org/t/p/w200/p8F2G3B4V6F8E7D6S5A4B3C2D1.jpg', release_date: '1999-10-15', vote_average: 8.4 }
     ]
   }
 
@@ -461,19 +461,19 @@ const getSmartRecommendations = async (query: string) => {
 
   let intro = ''
   if (userStats.value?.favorite_genres?.length) {
-    intro = `看到你喜欢${userStats.value.favorite_genres.join('、')}，为你推荐${matchedGenre || '这些'}电影：`
+    intro = `Since you like ${userStats.value.favorite_genres.join(', ')}, I recommend ${matchedGenre || 'these'} movies:`
   } else if (userStats.value?.ratings_count) {
-    intro = '根据你的观影记录，为你推荐：'
+    intro = 'Based on your viewing history, I recommend:'
   } else {
-    intro = '为你推荐以下热门电影：'
+    intro = 'Here are some popular movies I recommend:'
   }
 
   messages.value.push({ role: 'assistant', content: intro, type: 'text' })
   messages.value.push({ role: 'assistant', type: 'recommendations', movies: recommendations })
 
   const followUp = userStats.value?.favorite_genres?.length
-    ? `喜欢${userStats.value.favorite_genres.join('或')}吗？还想看什么类型？`
-    : '还想看什么类型？告诉我吧！'
+    ? `Do you like ${userStats.value.favorite_genres.join(' or ')}? What other type would you like?`
+    : 'What other type would you like? Tell me!'
 
   messages.value.push({ role: 'assistant', content: followUp, type: 'text' })
 }
@@ -482,36 +482,36 @@ const getOpenAIRecommendations = async (query: string) => {
   if (!apiKey.value) {
     messages.value.push({
       role: 'assistant',
-      content: '请先在设置中配置API Key。点击右上角设置按钮。',
+      content: 'Please configure API Key in settings first. Click the settings button in the top right corner.',
       type: 'text'
     })
     return
   }
 
-  const favoriteGenres = userStats.value?.favorite_genres?.join('、') || '未知'
-  const highRatedMovies = userStats.value?.top_rated_movies?.map((m: Movie) => m.title).join('、') || '暂无'
+  const favoriteGenres = userStats.value?.favorite_genres?.join(', ') || 'Unknown'
+  const highRatedMovies = userStats.value?.top_rated_movies?.map((m: Movie) => m.title).join(', ') || 'None'
 
-  const systemPrompt = `你是一个电影推荐专家。
+  const systemPrompt = `You are a movie recommendation expert.
 
-用户画像：
-- 已收藏 ${userStats.value?.collections_count || 0} 部电影
-- 已评分 ${userStats.value?.ratings_count || 0} 部电影
-- 偏好类型: ${favoriteGenres}
-- 高分电影: ${highRatedMovies}
+User Profile:
+- Collections: ${userStats.value?.collections_count || 0} movies
+- Ratings: ${userStats.value?.ratings_count || 0} movies
+- Favorite Genres: ${favoriteGenres}
+- Top Rated Movies: ${highRatedMovies}
 
-任务：根据用户查询和画像，推荐3-5部相关电影。
+Task: Based on user query and profile, recommend 3-5 relevant movies.
 
-重要规则：
-1. 必须提供准确的TMDB电影ID（6位以上数字）
-2. 推荐的每部电影必须是真实存在的
-3. 必须与用户查询和偏好相关
+Important Rules:
+1. Must provide accurate TMDB movie ID (6+ digits)
+2. Recommended movies must be real
+3. Must be relevant to user query and preferences
 
-输出格式：
-简短推荐理由（1句话）
+Output Format:
+Brief recommendation reason (1 sentence)
 ---
-ID: 157336, 星际穿越
-ID: 155, 盗梦空间
-ID: 27205, 蝙蝠侠：黑暗骑士`
+ID: 157336, Interstellar
+ID: 155, Inception
+ID: 27205, The Dark Knight Rises`
 
   try {
     const response = await axios.post('https://api.openai.com/v1/chat/completions', {
@@ -584,7 +584,7 @@ ID: 27205, 蝙蝠侠：黑暗骑士`
       if (targetId && targetId.length >= 5) {
         try {
           const res = await axios.get(`https://api.themoviedb.org/3/movie/${targetId}`, {
-            params: { api_key: tmdbApiKey, language: 'zh-CN' }
+            params: { api_key: tmdbApiKey, language: 'en-US' }
           })
           if (res.data && res.data.id) {
             movieData = {
@@ -593,7 +593,7 @@ ID: 27205, 蝙蝠侠：黑暗骑士`
               poster_path: res.data.poster_path
                 ? `https://image.tmdb.org/t/p/w200${res.data.poster_path}`
                 : '/placeholder-movie.svg',
-              release_date: res.data.release_date || '未知',
+              release_date: res.data.release_date || 'Unknown',
               vote_average: res.data.vote_average || 0
             }
             console.log(`Found by ID ${targetId}:`, movieData.title)
@@ -612,9 +612,9 @@ ID: 27205, 蝙蝠侠：黑暗骑士`
             .split(' ')[0]
 
           if (cleanTitle.length >= 2) {
-            const searchRes = await axios.get(`https://api.themoviedb.org/3/search/movie`, {
-              params: { api_key: tmdbApiKey, query: cleanTitle, language: 'zh-CN', page: 1 }
-            })
+          const searchRes = await axios.get(`https://api.themoviedb.org/3/search/movie`, {
+            params: { api_key: tmdbApiKey, query: cleanTitle, language: 'en-US', page: 1 }
+          })
 
             if (searchRes.data.results && searchRes.data.results.length > 0) {
               const best = searchRes.data.results.find((m: any) => {
@@ -630,7 +630,7 @@ ID: 27205, 蝙蝠侠：黑暗骑士`
                   poster_path: best.poster_path
                     ? `https://image.tmdb.org/t/p/w200${best.poster_path}`
                     : '/placeholder-movie.svg',
-                  release_date: best.release_date || '未知',
+                  release_date: best.release_date || 'Unknown',
                   vote_average: best.vote_average || 0
                 }
                 processedTitles.add(cleanTitle)
@@ -652,21 +652,21 @@ ID: 27205, 蝙蝠侠：黑暗骑士`
 
     if (validMovies.length > 0) {
       const introText = aiResponse.split('---')[0].split('\n').slice(0, 2).join('\n').trim()
-      messages.value.push({ role: 'assistant', content: introText || '为你推荐以下电影：', type: 'text' })
+      messages.value.push({ role: 'assistant', content: introText || 'Here are some movies I recommend:', type: 'text' })
       messages.value.push({ role: 'assistant', type: 'recommendations', movies: validMovies })
-      messages.value.push({ role: 'assistant', content: '点击电影查看详情。还想找什么类型？', type: 'text' })
+      messages.value.push({ role: 'assistant', content: 'Click on a movie to see details. What other type would you like?', type: 'text' })
       return
     }
 
     messages.value.push({ role: 'assistant', content: aiResponse, type: 'text' })
   } catch (error: any) {
     if (error.response?.status === 401) {
-      messages.value.push({ role: 'assistant', content: 'API Key无效，请检查设置。', type: 'text' })
+      messages.value.push({ role: 'assistant', content: 'API Key is invalid. Please check your settings.', type: 'text' })
     } else if (error.response?.status === 429) {
-      messages.value.push({ role: 'assistant', content: '请求过于频繁，请稍后再试。', type: 'text' })
+      messages.value.push({ role: 'assistant', content: 'Too many requests. Please try again later.', type: 'text' })
     } else {
       console.error('OpenAI API error:', error)
-      messages.value.push({ role: 'assistant', content: 'AI服务暂时不可用，请稍后再试。', type: 'text' })
+      messages.value.push({ role: 'assistant', content: 'AI service is temporarily unavailable. Please try again later.', type: 'text' })
     }
   }
 }
@@ -677,9 +677,9 @@ const formatMessage = (content: string) => {
 }
 
 const formatDate = (dateString: string) => {
-  if (!dateString || dateString === '未知') return '未知'
+  if (!dateString || dateString === 'Unknown') return 'Unknown'
   try {
-    return new Date(dateString).toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })
+    return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
   } catch { return dateString }
 }
 
@@ -700,7 +700,7 @@ const saveSettings = () => {
   localStorage.setItem('ai-chat-service', aiService.value)
   localStorage.setItem('ai-chat-api-key', apiKey.value)
   showSettings.value = false
-  ElMessage.success('设置已保存')
+  ElMessage.success('Settings saved')
 }
 
 onMounted(async () => {
