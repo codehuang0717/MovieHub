@@ -394,78 +394,108 @@ const getSmartRecommendations = async (query: string) => {
   const lowerQuery = query.toLowerCase()
   let recommendations: Movie[] = []
 
-  const genreKeywords: Record<string, string[]> = {
-    'Sci-Fi': ['scifi', 'science', 'sci-fi', 'science fiction', '科幻'],
-    'Romance': ['romance', 'love', '浪漫', '恋爱'],
-    'Comedy': ['comedy', 'funny', '搞笑', '幽默'],
-    'Thriller': ['thriller', 'suspense', '惊悚', '推理'],
-    'Action': ['action', '打斗'],
-    'Animation': ['animation', 'anime', '动漫', '卡通'],
-    'Horror': ['horror', 'scary', '害怕'],
-    'War': ['war', 'military', '军事'],
-    'Documentary': ['documentary', '纪录']
+  // TMDB Genre ID mapping
+  const genreMap: Record<string, number> = {
+    'action': 28,
+    'adventure': 12,
+    'animation': 16,
+    'comedy': 35,
+    'crime': 80,
+    'documentary': 99,
+    'drama': 18,
+    'family': 10751,
+    'fantasy': 14,
+    'history': 36,
+    'horror': 27,
+    'music': 10402,
+    'mystery': 9648,
+    'romance': 10749,
+    'scifi': 878,
+    'science fiction': 878,
+    'thriller': 53,
+    'war': 10752,
+    'western': 37
   }
 
-  let matchedGenre = ''
-  for (const [genre, keywords] of Object.entries(genreKeywords)) {
+  // Keywords for matching user queries
+  const genreKeywords: Record<string, string[]> = {
+    'scifi': ['scifi', 'science', 'sci-fi', 'science fiction', '科幻'],
+    'romance': ['romance', 'love', '浪漫', '恋爱'],
+    'comedy': ['comedy', 'funny', '搞笑', '幽默'],
+    'thriller': ['thriller', 'suspense', '惊悚', '推理'],
+    'action': ['action', '打斗'],
+    'animation': ['animation', 'anime', '动漫', '卡通'],
+    'horror': ['horror', 'scary', '害怕'],
+    'war': ['war', 'military', '军事'],
+    'documentary': ['documentary', '纪录']
+  }
+
+  // Find matched genre from user query
+  let matchedGenreKey = ''
+  let matchedGenreName = ''
+  for (const [genreKey, keywords] of Object.entries(genreKeywords)) {
     if (keywords.some(kw => lowerQuery.includes(kw))) {
-      matchedGenre = genre
+      matchedGenreKey = genreKey
+      matchedGenreName = genreKey.charAt(0).toUpperCase() + genreKey.slice(1)
       break
     }
   }
 
-  const movieDatabase: Record<string, Movie[]> = {
-    'Sci-Fi': [
+  // If no genre matched, use default popular movies
+  if (!matchedGenreKey) {
+    matchedGenreKey = 'popular'
+    matchedGenreName = 'popular'
+  }
+
+  try {
+    // Build TMDB API URL
+    let apiUrl = 'https://api.themoviedb.org/3/discover/movie'
+    const params: Record<string, any> = {
+      api_key: '2d89ddec4f8acd4c9f2036ea7321f326',
+      language: 'en-US',
+      sort_by: 'popularity.desc',
+      page: Math.floor(Math.random() * 10) + 1 // Random page for variety
+    }
+
+    // Add genre filter if matched
+    if (matchedGenreKey !== 'popular' && genreMap[matchedGenreKey]) {
+      params.with_genres = genreMap[matchedGenreKey]
+    }
+
+    // Make API request
+    const response = await axios.get(apiUrl, { params })
+    
+    if (response.data && response.data.results) {
+      // Map TMDB results to our Movie interface
+      recommendations = response.data.results.slice(0, 6).map((movie: any) => ({
+        id: movie.id,
+        title: movie.title,
+        poster_path: movie.poster_path 
+          ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
+          : '/placeholder-movie.svg',
+        release_date: movie.release_date || 'Unknown',
+        vote_average: movie.vote_average || 0
+      }))
+    }
+  } catch (error) {
+    console.error('Failed to fetch movies from TMDB:', error)
+    // Fallback to some default movies if API fails
+    recommendations = [
       { id: 157336, title: 'Interstellar', poster_path: 'https://image.tmdb.org/t/p/w200/gEU2QniL6E8ahG0Sm62X719qVJh.jpg', release_date: '2014-11-05', vote_average: 8.6 },
       { id: 155, title: 'Inception', poster_path: 'https://image.tmdb.org/t/p/w200/9gk7admalRg2G2d5p4nMDa3ysjA.jpg', release_date: '2010-07-14', vote_average: 8.8 },
       { id: 27205, title: 'The Dark Knight Rises', poster_path: 'https://image.tmdb.org/t/p/w200/9WJE5xv7k6K8z2Y1t0K1K5G5Z8k.jpg', release_date: '2012-07-18', vote_average: 8.4 }
-    ],
-    'Romance': [
-      { id: 11216, title: 'Titanic', poster_path: 'https://image.tmdb.org/t/p/w200/9xjZS2rlVxm8SFx8kPC3aO9mnrz.jpg', release_date: '1997-12-18', vote_average: 7.9 },
-      { id: 49026, title: 'Before Sunrise', poster_path: 'https://image.tmdb.org/t/p/w200/gC1n7kvLSkpuFs6hZhYfbY7rYvq.jpg', release_date: '1995-04-20', vote_average: 8.0 },
-      { id: 452876, title: 'A Bread of Love', poster_path: 'https://image.tmdb.org/t/p/w200/w2PMyoyLU22YvrGK3smVM9fW1jj.jpg', release_date: '2021-01-29', vote_average: 7.9 }
-    ],
-    'Comedy': [
-      { id: 497572, title: 'Restart Life', poster_path: 'https://image.tmdb.org/t/p/w200/h5UzYZquMwO9FVn15R2eK2itmHu.jpg', release_date: '2022-11-04', vote_average: 8.5 },
-      { id: 429617, title: 'Spider-Man: Into the Spider-Verse', poster_path: 'https://image.tmdb.org/t/p/w200/3IlKqUFCh6cCDM2WN4Ug7UG0FHs.jpg', release_date: '2018-12-07', vote_average: 8.4 },
-      { id: 438631, title: 'Detective Chinatown', poster_path: 'https://image.tmdb.org/t/p/w200/iqZ4IKW7lU9zLqCMc9WBB1lZQUZ.jpg', release_date: '2015-12-31', vote_average: 7.5 }
-    ],
-    'Thriller': [
-      { id: 278, title: 'The Shawshank Redemption', poster_path: 'https://image.tmdb.org/t/p/w200/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg', release_date: '1994-09-23', vote_average: 9.3 },
-      { id: 550988, title: 'The Invisible Guest', poster_path: 'https://image.tmdb.org/t/p/w200/6hgI4j9o3k7v7bT5q8j4T6bX8k0.jpg', release_date: '2016-09-06', vote_average: 8.1 },
-      { id: 3594, title: 'Triangle', poster_path: 'https://image.tmdb.org/t/p/w200/g0LDPJdcE6iCM9tG2f5Kbz0CNyN.jpg', release_date: '2009-10-16', vote_average: 7.5 }
-    ],
-    'Action': [
-      { id: 27205, title: 'The Dark Knight', poster_path: 'https://image.tmdb.org/t/p/w200/9WJE5xv7k6K8z2Y1t0K1K5G5Z8k.jpg', release_date: '2008-07-16', vote_average: 9.0 },
-      { id: 238, title: 'The Godfather', poster_path: 'https://image.tmdb.org/t/p/w200/3TlQYNuCU8g9U6XvX3pMlVCT5vZ.jpg', release_date: '1972-03-14', vote_average: 8.7 },
-      { id: 299534, title: 'Captain America: The Winter Soldier', poster_path: 'https://image.tmdb.org/t/p/w200/tV8dYDW5b1K6zhFfLc3CvJkd1qU.jpg', release_date: '2014-03-20', vote_average: 7.7 }
-    ],
-    'Animation': [
-      { id: 372058, title: 'Your Name', poster_path: 'https://image.tmdb.org/t/p/w200/q719jXXEzOoYaps6babgKnONONX.jpg', release_date: '2016-08-26', vote_average: 8.5 },
-      { id: 4935, title: "Howl's Moving Castle", poster_path: 'https://image.tmdb.org/t/p/w200/v9yGJquH7ZXckXP4VPPV77XxX1G.jpg', release_date: '2004-11-20', vote_average: 8.2 },
-      { id: 63844, title: 'Inside Out', poster_path: 'https://image.tmdb.org/t/p/w200/oDB4HBK89cw8U1jQXvP2EIVn6ZU.jpg', release_date: '2015-06-09', vote_average: 8.1 }
-    ],
-    'Horror': [
-      { id: 439503, title: 'Hereditary', poster_path: 'https://image.tmdb.org/t/p/w200/tj1hSyu3LLM5X0GftBEtD2M2X3N.jpg', release_date: '2018-06-07', vote_average: 7.3 },
-      { id: 546554, title: 'Gonjiam: Haunted Asylum', poster_path: 'https://image.tmdb.org/t/p/w200/pO4M7pTcv2f2X7E6a3wB4k6u3x7.jpg', release_date: '2018-03-28', vote_average: 6.9 },
-      { id: 487310, title: 'The Nun', poster_path: 'https://image.tmdb.org/t/p/w200/5X3Cg2Z1Y1Y1Y6Y1Y1Y1Y1Y1Y1.jpg', release_date: '2018-09-06', vote_average: 5.9 }
-    ],
-    'default': [
-      { id: 27205, title: 'The Dark Knight', poster_path: 'https://image.tmdb.org/t/p/w200/9WJE5xv7k6K8z2Y1t0K1K5G5Z8k.jpg', release_date: '2008-07-16', vote_average: 9.0 },
-      { id: 238, title: 'The Godfather', poster_path: 'https://image.tmdb.org/t/p/w200/3TlQYNuCU8g9U6XvX3pMlVCT5vZ.jpg', release_date: '1972-03-14', vote_average: 8.7 },
-      { id: 680, title: 'Fight Club', poster_path: 'https://image.tmdb.org/t/p/w200/p8F2G3B4V6F8E7D6S5A4B3C2D1.jpg', release_date: '1999-10-15', vote_average: 8.4 }
     ]
   }
 
-  recommendations = (matchedGenre && movieDatabase[matchedGenre]) ? movieDatabase[matchedGenre] : movieDatabase['default']
-
   let intro = ''
   if (userStats.value?.favorite_genres?.length) {
-    intro = `Since you like ${userStats.value.favorite_genres.join(', ')}, I recommend ${matchedGenre || 'these'} movies:`
+    intro = `Since you like ${userStats.value.favorite_genres.join(', ')}, I recommend ${matchedGenreName} movies:`
   } else if (userStats.value?.ratings_count) {
     intro = 'Based on your viewing history, I recommend:'
   } else {
-    intro = 'Here are some popular movies I recommend:'
+    intro = matchedGenreKey === 'popular' 
+      ? 'Here are some popular movies I recommend:' 
+      : `Here are some ${matchedGenreName} movies I recommend:`
   }
 
   messages.value.push({ role: 'assistant', content: intro, type: 'text' })
