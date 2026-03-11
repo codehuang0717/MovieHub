@@ -10,7 +10,6 @@ services:
       - DATABASE_URL=sqlite:///db.sqlite3
       - TMDB_API_KEY=${TMDB_API_KEY}
     volumes:
-      - ./backend_data:/app
       - backend_media:/app/media
       - backend_static:/app/staticfiles
     expose:

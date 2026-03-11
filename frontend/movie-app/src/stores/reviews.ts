@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuthStore } from './auth'
 
-const API_BASE_URL = 'http://localhost:8000/api/reviews'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ? `${import.meta.env.VITE_API_BASE_URL}/reviews` : 'http://localhost:8000/api/reviews'
 
 export const useReviewStore = defineStore('reviews', () => {
   const authStore = useAuthStore()
