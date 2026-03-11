@@ -8,7 +8,7 @@ echo "Starting Deployment on $SERVER_IP"
 echo "======================================"
 
 # Pull latest changes (if in a git repo)
-# git pull origin master
+git pull origin master
 
 # Build and start containers
 docker-compose up -d --build
