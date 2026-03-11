@@ -5,16 +5,16 @@
         <div class="chat-header">
           <div class="chat-header-info">
             <el-icon class="ai-icon"><ChatDotRound /></el-icon>
-            <span>{{ $t('aiChat.title') }}</span>
+            <span>AI Chat</span>
           </div>
           <div class="chat-header-actions">
-            <el-button text circle size="small" @click="clearChatAction" :title="$t('aiChat.clearChat')">
+            <el-button text circle size="small" @click="clearChatAction" :title="'Clear Chat'">
               <el-icon><Delete /></el-icon>
             </el-button>
-            <el-button text circle size="small" @click="showSettings = true" :title="$t('aiChat.settings')">
+            <el-button text circle size="small" @click="showSettings = true" :title="'Settings'">
               <el-icon><Setting /></el-icon>
             </el-button>
-            <el-button text circle size="small" @click="closeChat" :title="$t('aiChat.close')">
+            <el-button text circle size="small" @click="closeChat" :title="'Close'">
               <el-icon><Close /></el-icon>
             </el-button>
           </div>
@@ -25,32 +25,32 @@
             <div class="welcome-avatar">
               <el-icon><ChatDotRound /></el-icon>
             </div>
-            <p class="welcome-title">{{ $t('aiChat.assistantTitle') }}</p>
-            <p class="welcome-desc">{{ $t('aiChat.welcomeDesc') }}</p>
+            <p class="welcome-title">AI Movie Assistant</p>
+            <p class="welcome-desc">I can help you discover new movies based on your taste!</p>
 
             <div class="user-stats-panel" v-if="isLoggedIn && userStats">
               <div class="stats-header">
                 <el-icon><User /></el-icon>
-                <span>{{ $t('aiChat.yourData') }}</span>
+                <span>Your Data</span>
               </div>
               <div class="stats-row">
                 <div class="stat-item">
                   <span class="stat-value">{{ userStats.collections_count }}</span>
-                  <span class="stat-label">{{ $t('aiChat.collections') }}</span>
+                  <span class="stat-label">Collections</span>
                 </div>
                 <div class="stat-item">
                   <span class="stat-value">{{ userStats.ratings_count }}</span>
-                  <span class="stat-label">{{ $t('aiChat.ratings') }}</span>
+                  <span class="stat-label">Ratings</span>
                 </div>
               </div>
               <div class="stats-genres" v-if="userStats.favorite_genres?.length">
                 <el-icon><MagicStick /></el-icon>
-                <span>{{ $t('aiChat.like') }} {{ userStats.favorite_genres.join(' · ') }}</span>
+                <span>Like {{ userStats.favorite_genres.join(' · ') }}</span>
               </div>
             </div>
             <div class="login-hint" v-else>
               <el-icon><Warning /></el-icon>
-              <span>{{ $t('aiChat.loginHint') }}</span>
+              <span>Please log in to see your stats.</span>
             </div>
           </div>
 
@@ -111,13 +111,13 @@
               @click="useQuickPromptAction(prompt.label)"
             >
               <el-icon><component :is="prompt.icon" /></el-icon>
-              <span>{{ $t(prompt.i18nKey) }}</span>
+              <span>{{ prompt.label }}</span>
             </div>
           </div>
           <div class="input-row">
             <el-input
               v-model="userInput"
-              :placeholder="$t('aiChat.inputPlaceholder')"
+              :placeholder="'Ask me about movies...'"
               @keyup.enter="sendMessage"
               :disabled="loading"
               size="large"
@@ -138,18 +138,18 @@
       <el-icon v-else size="28"><ChatDotRound /></el-icon>
     </div>
 
-    <el-dialog v-model="showSettings" :title="$t('aiChat.settingsTitle')" width="400px" class="settings-dialog">
+    <el-dialog v-model="showSettings" :title="'AI Chat Settings'" width="400px" class="settings-dialog">
       <div class="settings-content">
         <div class="setting-group">
-          <label>{{ $t('aiChat.recommendationEngine') }}</label>
+          <label>Recommendation Engine</label>
           <div class="engine-options">
-            <div
-              :class="['engine-option', { active: aiService === 'smart' }]"
-              @click="aiService = 'smart'"
-            >
-              <el-icon><MagicStick /></el-icon>
-              <span>{{ $t('aiChat.smartRecommend') }}</span>
-            </div>
+              <div
+                :class="['engine-option', { active: aiService === 'smart' }]"
+                @click="aiService = 'smart'"
+              >
+                <el-icon><MagicStick /></el-icon>
+                <span>Smart Recommend</span>
+              </div>
             <div
               :class="['engine-option', { active: aiService === 'openai' }]"
               @click="aiService = 'openai'"
@@ -165,16 +165,16 @@
           <el-input
             v-model="openaiKey"
             type="password"
-            :placeholder="$t('aiChat.apiKeyPlaceholder')"
+            :placeholder="'Enter OpenAI API Key'"
             show-password
           />
-          <div class="setting-hint">{{ $t('aiChat.apiKeyHint') }}</div>
+          <div class="setting-hint">Your API key is stored locally and never sent to our servers.</div>
         </div>
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="showSettings = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="primary" @click="saveSettings">{{ $t('common.save') }}</el-button>
+          <el-button @click="showSettings = false">Cancel</el-button>
+          <el-button type="primary" @click="saveSettings">Save</el-button>
         </span>
       </template>
     </el-dialog>
@@ -184,7 +184,6 @@
 <script setup lang="ts">
 import { ref, nextTick, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import {
   ChatDotRound, Close, Setting, Position, User, Star,
@@ -192,8 +191,6 @@ import {
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
-
-const { t, locale } = useI18n()
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -227,15 +224,15 @@ const userStats = ref<UserStats | null>(null)
 const messages = ref<Array<{ role: string; content?: string; type?: string; movies?: Movie[] }>>([])
 
 const quickPrompts = [
-  { label: '科幻大片', icon: Compass, i18nKey: 'aiChat.promptSciFi' },
-  { label: '轻松喜剧', icon: MagicStick, i18nKey: 'aiChat.promptComedy' },
-  { label: '高智商悬疑', icon: Film, i18nKey: 'aiChat.promptSuspense' }
+  { label: 'Sci-Fi Movies', icon: Compass, i18nKey: 'aiChat.promptSciFi' },
+  { label: 'Comedy Movies', icon: MagicStick, i18nKey: 'aiChat.promptComedy' },
+  { label: 'Suspense Movies', icon: Film, i18nKey: 'aiChat.promptSuspense' }
 ]
 
 const useQuickPromptAction = (promptLabel: string) => {
   const promptItem = quickPrompts.find(p => p.label === promptLabel)
   if (promptItem) {
-    userInput.value = t(promptItem.i18nKey)
+    userInput.value = promptItem.label
   } else {
     userInput.value = promptLabel
   }
@@ -245,7 +242,7 @@ const useQuickPromptAction = (promptLabel: string) => {
 const clearChatAction = () => {
   messages.value = []
   localStorage.removeItem(STORAGE_KEY)
-  ElMessage.success(t('aiChat.clearChat'))
+  ElMessage.success('Chat cleared')
 }
 
 const isLoggedIn = computed(() => authStore.isAuthenticated)
@@ -285,7 +282,7 @@ const toggleChat = async () => {
 const useQuickPrompt = (promptLabel: string) => {
   const promptItem = quickPrompts.find(p => p.label === promptLabel)
   if (promptItem) {
-    userInput.value = t(promptItem.i18nKey)
+    userInput.value = promptItem.label
   } else {
     userInput.value = promptLabel
   }
@@ -295,7 +292,7 @@ const useQuickPrompt = (promptLabel: string) => {
 const clearChat = () => {
   messages.value = []
   localStorage.removeItem(STORAGE_KEY)
-  ElMessage.success(t('aiChat.clearChat'))
+  ElMessage.success('Chat cleared')
 }
 
 const loadUserStats = async () => {
