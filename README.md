@@ -72,6 +72,26 @@
 - "我想看刺激的悬疑电影"
 - "有什么好看的科幻动作片"
 
+
+## ⚡ Performance Optimizations
+
+This project has undergone several performance improvements to enhance user experience and Lighthouse scores.
+
+### Key Improvements
+
+#### 1. Element Plus Optimization (On-Demand Loading)
+*   **Tree-shaking:** Implemented `unplugin-vue-components` and `unplugin-auto-import` with `ElementPlusResolver` to ensure that only components and icons actually used in the code are bundled.
+*   **Style Optimization:** Switched from a global Element Plus CSS import to automatic, per-component style injection, drastically reducing initial CSS payload.
+
+#### 2. Image Loading & Layout Stability
+*   **CLS Reduction:** Explicitly added `width` and `height` attributes to all image tags to prevent layout shifts during content loading.
+*   **LCP Enhancement:** Added `fetchpriority="high"` to hero images and key components to prioritize critical assets.
+*   **Intelligent Resizing:** Updated the TMDB API integration to request appropriate image sizes (`w200` for lists, `w780` for hero backgrounds) instead of defaulting to original, heavy resolutions.
+*   **Layout Stability:** Replaced `v-loading` directives with `el-skeleton` and refined CSS container heights to eliminate layout jumps during initial data fetching.
+
+#### 3. Development Environment Tweaks
+*   **Production Build Optimization:** Configured `vite-plugin-vue-devtools` to be active only in the development environment, reducing production bundle overhead.
+
 ## 📦 快速开始
 
 ### 环境要求
