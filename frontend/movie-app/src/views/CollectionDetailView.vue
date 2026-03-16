@@ -81,6 +81,8 @@
               <img
                 :src="movie.poster_path || movie.poster"
                 :alt="movie.title"
+                width="200"
+                height="300"
                 @error="handleImageError"
               />
               <div class="movie-rating" v-if="movie.vote_average">

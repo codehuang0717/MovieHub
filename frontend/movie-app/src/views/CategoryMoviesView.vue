@@ -47,6 +47,8 @@
                   v-if="movie.poster_path" 
                   :src="movie.poster_path" 
                   :alt="movie.title"
+                  width="200"
+                  height="300"
                   @error="handleImageError"
                 />
                 <div v-else class="no-poster">

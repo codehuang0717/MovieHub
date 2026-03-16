@@ -14,6 +14,8 @@
           :src="avatarUrl" 
           :alt="altText"
           class="avatar-image"
+          width="120"
+          height="120"
           @error="handleImageError"
         />
         <div v-else class="avatar-placeholder">

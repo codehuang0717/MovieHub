@@ -109,6 +109,8 @@
                         v-if="item.movie.poster"
                         :src="item.movie.poster"
                         :alt="item.movie.title"
+                        width="60"
+                        height="90"
                         @error="handleImageError"
                       />
                       <div v-else class="no-poster">
@@ -145,6 +147,8 @@
                         v-if="rating.movie.poster"
                         :src="rating.movie.poster"
                         :alt="rating.movie.title"
+                        width="60"
+                        height="90"
                         @error="handleImageError"
                       />
                       <div v-else class="no-poster">

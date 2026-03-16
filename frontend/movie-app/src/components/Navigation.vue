@@ -47,6 +47,9 @@
                 :src="userNavAvatar"
                 :alt="authStore.user?.username || '用户头像'"
                 class="nav-avatar-img"
+                width="36"
+                height="36"
+                fetchpriority="high"
                 @error="handleAvatarError"
               />
               <div v-else class="nav-avatar-fallback">

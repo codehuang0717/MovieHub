@@ -73,7 +73,7 @@
                     @click="goToMovie(movie.id)"
                   >
                     <div class="rec-poster">
-                      <img :src="movie.poster_path" :alt="movie.title" @error="handleImageError" />
+                      <img :src="movie.poster_path" :alt="movie.title" width="100" height="150" @error="handleImageError" />
                       <div class="rec-score">
                         <el-icon><Star /></el-icon>
                         {{ movie.vote_average?.toFixed(1) }}

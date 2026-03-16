@@ -78,6 +78,8 @@
                 <img 
                   :src="movie.poster_path" 
                   :alt="movie.title"
+                  width="200"
+                  height="300"
                   @error="handleImageError"
                   loading="lazy"
                 />

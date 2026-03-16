@@ -9,7 +9,7 @@
           <transition name="filter-expand">
             <div class="filter-container" v-show="!isFilterSticky">
               <div class="filter-section">
-                <h3>电影类型</h3>
+                <h3>{{ $t('movie.type') }}</h3>
                 <div class="genre-filters">
                   <el-button
                     v-for="genre in genres"
@@ -139,6 +139,8 @@
                 <img
                   :src="movie.poster_path"
                   :alt="movie.title"
+                  width="200"
+                  height="300"
                   @error="handleImageError"
                   loading="lazy"
                   :class="{ 'placeholder-image': isPlaceholderImage(movie.poster_path) }"
@@ -523,23 +525,23 @@ const testDirectAPI = async () => {
   try {
     if (selectedGenre.value) {
       console.log('Testing with genre:', selectedGenre.value, 'sort:', sortBy.value)
-      
+
       // 测试不同的排序方式
       const testSorts = ['popularity.desc', 'vote_average.desc', 'release_date.desc']
-      
+
       for (const sortType of testSorts) {
         console.log(`\n--- Testing sort: ${sortType} ---`)
         const result = await tmdbStore.fetchMoviesByGenre(
-          selectedGenre.value, 
-          1, 
-          selectedYear.value, 
+          selectedGenre.value,
+          1,
+          selectedYear.value,
           sortType
         )
-        console.log('Top 5 movies:', result.results.slice(0, 5).map(m => ({ 
-          title: m.title, 
-          rating: m.vote_average, 
+        console.log('Top 5 movies:', result.results.slice(0, 5).map(m => ({
+          title: m.title,
+          rating: m.vote_average,
           popularity: m.popularity,
-          release_date: m.release_date 
+          release_date: m.release_date
         })))
       }
     }
@@ -555,7 +557,7 @@ const testAPI = async () => {
     console.log('Current genre:', selectedGenre.value)
     console.log('Current sort:', sortBy.value)
     console.log('Current year:', selectedYear.value)
-    
+
     // 重新调用一次API来查看结果
     await loadMovies()
   } catch (error) {

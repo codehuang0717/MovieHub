@@ -40,7 +40,7 @@
             <div class="hero-container">
 
               <div class="movie-poster">
-                <img :src="movie.poster_path" :alt="movie.title" @error="handleImageError" />
+                <img :src="movie.poster_path" :alt="movie.title" width="200" height="300" @error="handleImageError" />
               </div>
 
               <div class="movie-info">
@@ -173,6 +173,8 @@
                         :src="comment.user_avatar"
                         :alt="comment.user"
                         class="comment-avatar-img"
+                        width="36"
+                        height="36"
                         @error="handleImageError"
                       />
                       <span v-else>
@@ -224,6 +226,8 @@
                     v-if="person.profile_path"
                     :src="`https://image.tmdb.org/t/p/w200${person.profile_path}`"
                     :alt="person.name"
+                    width="60"
+                    height="60"
                     @error="handleImageError"
                   />
                   <div v-else class="no-avatar">
@@ -284,7 +288,7 @@
                 @click="goToMovie(movie.id)"
               >
                 <div class="recommended-poster">
-                  <img :src="movie.poster_path" :alt="movie.title" @error="handleImageError" />
+<img :src="movie.poster_path" :alt="movie.title" width="300" height="450" fetchpriority="high" @error="handleImageError" />
                 </div>
                 <div class="recommended-info">
                   <h4>{{ movie.title }}</h4>

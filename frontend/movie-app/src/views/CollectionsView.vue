@@ -51,6 +51,8 @@
                   <img
                     :src="movie.poster_path || movie.poster"
                     :alt="movie.title"
+                    width="100"
+                    height="150"
                     @error="handleImageError"
                   />
                 </div>

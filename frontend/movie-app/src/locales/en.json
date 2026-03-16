@@ -98,6 +98,7 @@
     "operationFailed": "Operation failed, please try again",
     "loadDataFailed": "Failed to load data",
     "genreType": "Genre",
+    "type" : "Movie Type",
     "otherFilters": "Other Filters",
     "noPosterAvailable": "No movie poster available"
   },

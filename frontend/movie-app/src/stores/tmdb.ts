@@ -208,8 +208,8 @@ export const useTMDBStore = defineStore('tmdb', () => {
 
       popularMovies.value = response.data.results.map((movie: any) => ({
         ...movie,
-        poster_path: getImageUrl(movie.poster_path),
-        backdrop_path: getImageUrl(movie.backdrop_path, 'w1280'),
+        poster_path: getImageUrl(movie.poster_path, 'w200'),
+        backdrop_path: getImageUrl(movie.backdrop_path, 'w780'),
         release_date: movie.release_date || '未知',
         vote_average: movie.vote_average || 0
       }))
@@ -238,8 +238,8 @@ export const useTMDBStore = defineStore('tmdb', () => {
 
       topRatedMovies.value = response.data.results.map((movie: any) => ({
         ...movie,
-        poster_path: getImageUrl(movie.poster_path),
-        backdrop_path: getImageUrl(movie.backdrop_path, 'w1280'),
+        poster_path: getImageUrl(movie.poster_path, 'w200'),
+        backdrop_path: getImageUrl(movie.backdrop_path, 'w780'),
         release_date: movie.release_date || '未知',
         vote_average: movie.vote_average || 0
       }))
@@ -263,8 +263,8 @@ export const useTMDBStore = defineStore('tmdb', () => {
 
       upcomingMovies.value = response.data.results.map((movie: any) => ({
         ...movie,
-        poster_path: getImageUrl(movie.poster_path),
-        backdrop_path: getImageUrl(movie.backdrop_path, 'w1280'),
+        poster_path: getImageUrl(movie.poster_path, 'w200'),
+        backdrop_path: getImageUrl(movie.backdrop_path, 'w780'),
         release_date: movie.release_date || '未知',
         vote_average: movie.vote_average || 0
       }))
@@ -293,8 +293,8 @@ export const useTMDBStore = defineStore('tmdb', () => {
 
       nowPlayingMovies.value = response.data.results.map((movie: any) => ({
         ...movie,
-        poster_path: getImageUrl(movie.poster_path),
-        backdrop_path: getImageUrl(movie.backdrop_path, 'w1280'),
+        poster_path: getImageUrl(movie.poster_path, 'w200'),
+        backdrop_path: getImageUrl(movie.backdrop_path, 'w780'),
         release_date: movie.release_date || '未知',
         vote_average: movie.vote_average || 0
       }))
@@ -319,8 +319,8 @@ export const useTMDBStore = defineStore('tmdb', () => {
 
       searchResults.value = response.data.results.map((movie: any) => ({
         ...movie,
-        poster_path: getImageUrl(movie.poster_path),
-        backdrop_path: getImageUrl(movie.backdrop_path, 'w1280'),
+        poster_path: getImageUrl(movie.poster_path, 'w200'),
+        backdrop_path: getImageUrl(movie.backdrop_path, 'w780'),
         release_date: movie.release_date || '未知',
         vote_average: movie.vote_average || 0
       }))
@@ -349,7 +349,7 @@ export const useTMDBStore = defineStore('tmdb', () => {
 
       movieDetails.value = {
         ...movie,
-        poster_path: getImageUrl(movie.poster_path),
+        poster_path: getImageUrl(movie.poster_path, 'w500'),
         backdrop_path: getImageUrl(movie.backdrop_path, 'w1280'),
         release_date: movie.release_date || '未知',
         vote_average: movie.vote_average || 0,

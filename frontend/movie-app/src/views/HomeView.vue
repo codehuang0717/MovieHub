@@ -45,73 +45,101 @@
       </el-carousel>
     </section>
 
-    <!-- Popular Movies -->
+      <!-- Popular Movies -->
     <section class="movies-section">
       <div class="section-header">
         <h2>🔥 {{ $t('home.popular') }}</h2>
         <el-button text @click="router.push('/movies')">{{ $t('common.seeMore') }}</el-button>
       </div>
 
-      <div class="movies-grid" v-loading="tmdbStore.loading">
-        <div
-          v-for="movie in tmdbStore.popularMovies.slice(0, 8)"
-          :key="movie.id"
-          class="movie-card"
-          @click="goToMovie(movie.id)"
-        >
-          <div class="movie-poster">
-            <img
-              :src="movie.poster_path"
-              :alt="movie.title"
-              @error="handleImageError"
-              loading="lazy"
-            />
-            <div class="movie-rating">
-              <el-icon><Star /></el-icon>
-              {{ movie.vote_average?.toFixed(1) }}
+      <el-skeleton :loading="tmdbStore.loading" animated>
+        <template #template>
+          <div class="movies-grid">
+            <div v-for="i in 8" :key="i" class="movie-card" style="aspect-ratio: 2/3;">
+              <el-skeleton-item variant="image" style="width: 100%; height: 100%;" />
             </div>
           </div>
-          <div class="movie-info">
-            <h3 class="movie-title">{{ movie.title }}</h3>
-            <p class="movie-date">{{ formatDate(movie.release_date) }}</p>
+        </template>
+        <template #default>
+          <div class="movies-grid">
+            <div
+              v-for="movie in tmdbStore.popularMovies.slice(0, 8)"
+              :key="movie.id"
+              class="movie-card"
+              @click="goToMovie(movie.id)"
+            >
+              <div class="movie-poster">
+                <img
+                  :src="movie.poster_path"
+                  :alt="movie.title"
+                  @error="handleImageError"
+                  loading="lazy"
+                  width="200"
+                  height="300"
+                />
+                <div class="movie-rating">
+                  <el-icon><Star /></el-icon>
+                  {{ movie.vote_average?.toFixed(1) }}
+                </div>
+              </div>
+              <div class="movie-info">
+                <h3 class="movie-title">{{ movie.title }}</h3>
+                <p class="movie-date">{{ formatDate(movie.release_date) }}</p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </template>
+      </el-skeleton>
     </section>
 
-    <!-- Upcoming Movies -->
+
+      <!-- Upcoming Movies -->
     <section class="movies-section">
       <div class="section-header">
         <h2>🎬 {{ $t('home.upcoming') }}</h2>
         <el-button text @click="router.push('/movies?filter=upcoming')">{{ $t('common.seeMore') }}</el-button>
       </div>
 
-      <div class="movies-grid" v-loading="tmdbStore.loading">
-        <div
-          v-for="movie in tmdbStore.upcomingMovies.slice(0, 6)"
-          :key="movie.id"
-          class="movie-card"
-          @click="goToMovie(movie.id)"
-        >
-          <div class="movie-poster">
-            <img
-              :src="movie.poster_path"
-              :alt="movie.title"
-              @error="handleImageError"
-              loading="lazy"
-            />
-            <div class="movie-rating">
-              <el-icon><Star /></el-icon>
-              {{ movie.vote_average?.toFixed(1) }}
+      <el-skeleton :loading="tmdbStore.loading" animated>
+        <template #template>
+          <div class="movies-grid">
+            <div v-for="i in 6" :key="i" class="movie-card" style="aspect-ratio: 2/3;">
+              <el-skeleton-item variant="image" style="width: 100%; height: 100%;" />
             </div>
           </div>
-          <div class="movie-info">
-            <h3 class="movie-title">{{ movie.title }}</h3>
-            <p class="movie-date">{{ formatDate(movie.release_date) }}</p>
+        </template>
+        <template #default>
+          <div class="movies-grid">
+            <div
+              v-for="movie in tmdbStore.upcomingMovies.slice(0, 6)"
+              :key="movie.id"
+              class="movie-card"
+              @click="goToMovie(movie.id)"
+            >
+              <div class="movie-poster">
+                <img
+                  :src="movie.poster_path"
+                  :alt="movie.title"
+                  @error="handleImageError"
+                  loading="lazy"
+                  width="200"
+                  height="300"
+                />
+                <div class="movie-rating">
+                  <el-icon><Star /></el-icon>
+                  {{ movie.vote_average?.toFixed(1) }}
+                </div>
+              </div>
+              <div class="movie-info">
+                <h3 class="movie-title">{{ movie.title }}</h3>
+                <p class="movie-date">{{ formatDate(movie.release_date) }}</p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </template>
+      </el-skeleton>
     </section>
+
 
     <!-- Top Rated -->
     <section class="movies-section">
@@ -120,31 +148,44 @@
         <el-button text @click="router.push('/movies?filter=top_rated')">{{ $t('common.seeMore') }}</el-button>
       </div>
 
-      <div class="movies-grid" v-loading="tmdbStore.loading">
-        <div
-          v-for="movie in tmdbStore.topRatedMovies.slice(0, 6)"
-          :key="movie.id"
-          class="movie-card"
-          @click="goToMovie(movie.id)"
-        >
-          <div class="movie-poster">
-            <img
-              :src="movie.poster_path"
-              :alt="movie.title"
-              @error="handleImageError"
-              loading="lazy"
-            />
-            <div class="movie-rating">
-              <el-icon><Star /></el-icon>
-              {{ movie.vote_average?.toFixed(1) }}
+      <el-skeleton :loading="tmdbStore.loading" animated>
+        <template #template>
+          <div class="movies-grid">
+            <div v-for="i in 6" :key="i" class="movie-card" style="aspect-ratio: 2/3;">
+              <el-skeleton-item variant="image" style="width: 100%; height: 100%;" />
             </div>
           </div>
-          <div class="movie-info">
-            <h3 class="movie-title">{{ movie.title }}</h3>
-            <p class="movie-date">{{ formatDate(movie.release_date) }}</p>
+        </template>
+        <template #default>
+          <div class="movies-grid">
+            <div
+              v-for="movie in tmdbStore.topRatedMovies.slice(0, 6)"
+              :key="movie.id"
+              class="movie-card"
+              @click="goToMovie(movie.id)"
+            >
+              <div class="movie-poster">
+                <img
+                  :src="movie.poster_path"
+                  :alt="movie.title"
+                  @error="handleImageError"
+                  loading="lazy"
+                  width="200"
+                  height="300"
+                />
+                <div class="movie-rating">
+                  <el-icon><Star /></el-icon>
+                  {{ movie.vote_average?.toFixed(1) }}
+                </div>
+              </div>
+              <div class="movie-info">
+                <h3 class="movie-title">{{ movie.title }}</h3>
+                <p class="movie-date">{{ formatDate(movie.release_date) }}</p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </template>
+      </el-skeleton>
     </section>
   </div>
 </AppLayout>
@@ -368,6 +409,7 @@ onMounted(() => {
 
 .hero-carousel {
   height: 100%;
+  width: 100%;
 }
 
 :deep(.hero-carousel .el-carousel__container) {
@@ -377,6 +419,7 @@ onMounted(() => {
 .hero-slide {
   position: relative;
   height: 100%;
+  min-height: 500px;
 }
 
 .hero-backdrop {

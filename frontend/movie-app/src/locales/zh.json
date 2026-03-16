@@ -99,6 +99,7 @@
     "loadDataFailed": "加载数据失败",
     "genreType": "类型",
     "otherFilters": "其他筛选",
+    "type": "电影类型",
     "noPosterAvailable": "暂无该电影海报"
   },
   "search": {

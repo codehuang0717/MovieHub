@@ -49,7 +49,10 @@
               <el-card class="watchlist-item" @click="goToMovieDetail(getMovieId(item))">
                 <div class="movie-poster">
                   <img v-if="getMoviePoster(item)" :src="getMoviePoster(item)"
-                    :alt="getMovieTitle(item)" @error="handleImageError" />
+                    :alt="getMovieTitle(item)"
+                    width="200"
+                    height="300"
+                    @error="handleImageError" />
                   <div v-else class="no-poster">
                     <el-icon>
                       <Picture />

@@ -51,7 +51,7 @@ def test_watchlist():
             user=user, movie=movie, defaults={"status": "want_to_watch"}
         )
 
-if created:
+        if created:
             print("成功添加到想看列表")
         else:
             print(f"电影已在想看列表中，状态: {watchlist_item.status}")
