@@ -2,28 +2,32 @@
 
 # Configuration
 SERVER_IP="34.58.12.77"
+# Stop script on first error
+set -e
 
 echo "======================================"
 echo "Starting Deployment on $SERVER_IP"
 echo "======================================"
 
-# Pull latest changes (if in a git repo)
+# 1. Pull latest changes
+echo "Pulling latest code..."
 git pull origin master
 
-# Build and start containers
-docker-compose up -d --build
+# 2. Force rebuild and recreate containers
+# --no-cache ensures Docker doesn't use old build layers
+echo "Building new containers..."
+docker-compose build --no-cache
 
-# Wait for backend to be ready
-echo "Waiting for backend to start..."
-sleep 5
+echo "Starting containers..."
+docker-compose up -d
 
-# Run migrations
+# 3. Run migrations
 echo "Running database migrations..."
 docker-compose exec -T backend python manage.py migrate
 
-# Collect static files
-# echo "Collecting static files..."
-# docker-compose exec -T backend python manage.py collectstatic --noinput
+# 4. Restart Nginx to force it to reload fresh static files from the volume
+echo "Restarting Nginx..."
+docker-compose restart nginx
 
 echo "======================================"
 echo "Deployment Complete!"
