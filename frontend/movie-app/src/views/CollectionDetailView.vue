@@ -65,7 +65,7 @@
         </div>
 
         <div v-if="filteredMovies.length === 0" class="empty-state">
-          <el-empty 
+          <el-empty
             :description="searchQuery ? $t('collections.noMatchingMovies') : $t('collections.noMoviesInCollection')"
           />
         </div>
@@ -111,7 +111,7 @@
                   :loading="removingMovieIds.includes(movie.id)"
                   @click.stop="removeMovieFromCollection(movie)"
                 >
-                  取消收藏
+                  {{ $t('collections.remove') }}
                 </el-button>
               </div>
             </div>
@@ -120,17 +120,17 @@
       </div>
 
       <!-- Edit Dialog -->
-      <el-dialog v-model="editDialogVisible" title="编辑收藏夹" width="520px">
+      <el-dialog v-model="editDialogVisible" :title="$t('collections.editTitle')" width="520px">
         <el-form
           ref="editFormRef"
           :model="editForm"
           :rules="editRules"
           label-position="top"
         >
-          <el-form-item label="收藏夹名称" prop="name">
+          <el-form-item :label="$t('collections.name')" prop="name">
             <el-input v-model="editForm.name" />
           </el-form-item>
-          <el-form-item label="描述" prop="description">
+          <el-form-item :label="$t('collections.description')" prop="description">
             <el-input
               v-model="editForm.description"
               type="textarea"
@@ -139,18 +139,18 @@
               show-word-limit
             />
           </el-form-item>
-          <el-form-item label="可见性" prop="is_public">
+          <el-form-item :label="$t('collections.visibility')" prop="is_public">
             <el-switch
               v-model="editForm.is_public"
-              active-text="公开"
-              inactive-text="私密"
+              :active-text="$t('collections.public')"
+              :inactive-text="$t('collections.private')"
             />
           </el-form-item>
         </el-form>
         <template #footer>
-          <el-button @click="editDialogVisible = false">取消</el-button>
+          <el-button @click="editDialogVisible = false">{{ $t('common.cancel') }}</el-button>
           <el-button type="primary" :loading="saving" @click="saveCollection">
-            保存
+            {{ $t('common.save') }}
           </el-button>
         </template>
       </el-dialog>
@@ -161,12 +161,14 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import { Search, ArrowLeft, Edit, Delete, Star } from '@element-plus/icons-vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { useCollectionStore } from '@/stores/collections'
 
+const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 const collectionStore = useCollectionStore()
@@ -199,7 +201,7 @@ const collectionId = computed(() => parseInt(route.params.id as string))
 
 const filteredMovies = computed(() => {
   if (!collection.value?.movies) return []
-  
+
   if (!searchQuery.value.trim()) {
     return collection.value.movies
   }
@@ -237,12 +239,12 @@ const goToMovie = (movie: any) => {
 }
 
 const handleSearch = () => {
-  // 搜索逻辑已在 computed 中处理
+// 搜索逻辑已在 computed 中处理
 }
 
 const editCollection = () => {
   if (!collection.value) return
-  
+
   editForm.value = {
     name: collection.value.name,
     description: collection.value.description || '',
@@ -250,7 +252,6 @@ const editCollection = () => {
   }
   editDialogVisible.value = true
 }
-
 const saveCollection = async () => {
   if (!editFormRef.value || !collection.value) return
 
@@ -270,9 +271,10 @@ const saveCollection = async () => {
       ...payload
     }
     editDialogVisible.value = false
-    ElMessage.success('收藏夹已更新')
+    ElMessage.success(t('collections.updateSuccess'))
   } catch (error) {
     console.error('Save collection error:', error)
+    ElMessage.error(t('common.error'))
   } finally {
     saving.value = false
   }
@@ -283,24 +285,27 @@ const deleteCollection = async () => {
 
   try {
     await ElMessageBox.confirm(
-      `确定要删除收藏夹 "${collection.value.name}" 吗？此操作不可恢复。`,
-      '确认删除',
+      t('collections.deleteConfirm', { name: collection.value.name }),
+      t('collections.deleteTitle'),
       {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
+        confirmButtonText: t('common.delete'),
+        cancelButtonText: t('common.cancel'),
         type: 'warning'
       }
     )
 
     await collectionStore.deleteCollection(collection.value.id)
-    ElMessage.success('收藏夹已删除')
+    ElMessage.success(t('collections.deleteSuccess'))
     router.push('/collections')
-  } catch (error) {
+  } catch (error: any) {
     if (error !== 'cancel') {
       console.error('Delete collection error:', error)
+      ElMessage.error(t('common.error'))
     }
   }
 }
+
+
 
 const removeMovieFromCollection = async (movie: any) => {
   if (!collection.value) return
@@ -308,15 +313,15 @@ const removeMovieFromCollection = async (movie: any) => {
   try {
     removingMovieIds.value.push(movie.id)
     await collectionStore.removeMovieFromCollection(collection.value.id, movie.id)
-    ElMessage.success(`已移除《${movie.title}》`)
-    
+    ElMessage.success(t('collections.removeSuccess', { title: movie.title }))
+
     // 更新本地收藏夹数据
     if (collection.value.movies) {
       collection.value.movies = collection.value.movies.filter((m: any) => m.id !== movie.id)
     }
   } catch (error) {
     console.error('Remove movie error:', error)
-    ElMessage.error('移除失败')
+    ElMessage.error(t('common.error'))
   } finally {
     removingMovieIds.value = removingMovieIds.value.filter(id => id !== movie.id)
   }
@@ -331,12 +336,12 @@ const loadCollection = async () => {
       collection.value = found
     } else {
       // 如果在 store 中没找到，可能需要单独获取
-      ElMessage.error('收藏夹不存在')
+      ElMessage.error('collections not exist')
       router.push('/collections')
     }
   } catch (error) {
     console.error('Load collection error:', error)
-    ElMessage.error('加载收藏夹失败')
+    ElMessage.error('Load collection failed')
     router.push('/collections')
   } finally {
     loading.value = false

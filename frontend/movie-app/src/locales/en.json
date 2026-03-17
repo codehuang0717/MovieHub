@@ -164,7 +164,8 @@
     "collectedMovies": "Collected Movies",
     "searchMovies": "Search movies...",
     "noMatchingMovies": "No matching movies found",
-    "removeSuccess": "Removed \"{title}\" from collection"
+    "removeSuccess": "Removed \"{title}\" from collection",
+    "editTitle":"Edit Title"
   },
   "watchlist": {
     "title": "Watchlist",

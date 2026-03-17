@@ -164,7 +164,8 @@
     "collectedMovies": "收藏的电影",
     "searchMovies": "搜索电影...",
     "noMatchingMovies": "没有找到匹配的电影",
-    "removeSuccess": "已移除《{title}》"
+    "removeSuccess": "已移除",
+    "editTitle":"编辑标题"
   },
   "watchlist": {
     "title": "观影清单",
