@@ -5,9 +5,9 @@
     </div>
 
     <div v-else-if="!collection" class="error-container">
-      <el-result icon="error" title="收藏夹不存在" sub-title="该收藏夹可能已被删除">
+      <el-result icon="error" :title="$t('collections.notFound')" :sub-title="$t('collections.possiblyDeleted')">
         <template #extra>
-          <el-button type="primary" @click="router.push('/collections')">返回收藏夹</el-button>
+          <el-button type="primary" @click="router.push('/collections')">{{ $t('collections.backToCollections') }}</el-button>
         </template>
       </el-result>
     </div>
@@ -20,12 +20,12 @@
             <h1 class="collection-title">{{ collection.name }}</h1>
             <div class="collection-meta">
               <el-tag v-if="collection.is_public" size="small" type="success">
-                公开
+                {{ $t('collections.public') }}
               </el-tag>
               <el-tag v-else size="small" type="info">
-                私密
+                {{ $t('collections.private') }}
               </el-tag>
-              <span class="movie-count">{{ collection.movies?.length || 0 }} 部电影</span>
+              <span class="movie-count">{{ $t('collections.moviesCount', { count: collection.movies?.length || 0 }) }}</span>
             </div>
           </div>
           <p v-if="collection.description" class="collection-description">
@@ -35,15 +35,15 @@
         <div class="collection-actions">
           <el-button @click="goBack">
             <el-icon><ArrowLeft /></el-icon>
-            返回
+            {{ $t('common.back') }}
           </el-button>
           <el-button @click="editCollection">
             <el-icon><Edit /></el-icon>
-            编辑
+            {{ $t('common.edit') }}
           </el-button>
           <el-button type="danger" @click="deleteCollection">
             <el-icon><Delete /></el-icon>
-            删除
+            {{ $t('common.delete') }}
           </el-button>
         </div>
       </div>
@@ -51,11 +51,11 @@
       <!-- Movies Grid -->
       <div class="movies-section">
         <div class="section-header">
-          <h2>收藏的电影</h2>
+          <h2>{{ $t('collections.collectedMovies') }}</h2>
           <div class="section-actions">
             <el-input
               v-model="searchQuery"
-              placeholder="搜索电影..."
+              :placeholder="$t('collections.searchMovies')"
               :prefix-icon="Search"
               clearable
               style="width: 300px"
@@ -66,7 +66,7 @@
 
         <div v-if="filteredMovies.length === 0" class="empty-state">
           <el-empty 
-            :description="searchQuery ? '没有找到匹配的电影' : '该收藏夹还没有添加任何电影'"
+            :description="searchQuery ? $t('collections.noMatchingMovies') : $t('collections.noMoviesInCollection')"
           />
         </div>
 

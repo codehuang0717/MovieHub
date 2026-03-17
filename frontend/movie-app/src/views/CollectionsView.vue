@@ -132,7 +132,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Plus } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import type { FormInstance } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { useCollectionStore } from '@/stores/collections'
 
@@ -155,7 +155,7 @@ const collectionForm = reactive({
   is_public: false
 })
 
-const collectionRules = {
+const collectionRules = computed<FormRules>(() => ({
   name: [
     { required: true, message: t('collections.nameRequired'), trigger: 'blur' },
     { min: 1, max: 100, message: t('collections.nameLength'), trigger: 'blur' }
@@ -163,6 +163,26 @@ const collectionRules = {
   description: [
     { max: 500, message: t('collections.descLength'), trigger: 'blur' }
   ]
+}))
+
+const showCreateDialog = () => {
+  editingCollection.value = null
+  collectionForm.name = ''
+  collectionForm.description = ''
+  collectionForm.is_public = false
+  dialogVisible.value = true
+}
+
+const viewCollection = (collection: any) => {
+  router.push({ name: 'collection-detail', params: { id: collection.id } })
+}
+
+const editCollection = (collection: any) => {
+  editingCollection.value = collection
+  collectionForm.name = collection.name
+  collectionForm.description = collection.description || ''
+  collectionForm.is_public = collection.is_public
+  dialogVisible.value = true
 }
 
 const saveCollection = async () => {
