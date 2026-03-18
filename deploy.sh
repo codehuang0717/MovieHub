@@ -18,6 +18,9 @@ git pull origin master
 echo "Building new containers..."
 docker-compose build --no-cache
 
+echo "Stopping and removing existing containers and volumes..."
+docker-compose down -v
+
 echo "Starting containers..."
 docker-compose up -d
 
