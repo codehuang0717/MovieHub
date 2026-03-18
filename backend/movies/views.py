@@ -198,7 +198,7 @@ def SyncMovieView(request, movie_id: int):
         # 从TMDB API获取电影信息
         tmdb_api_key = "2d89ddec4f8acd4c9f2036ea7321f326"
         tmdb_url = f"https://api.themoviedb.org/3/movie/{movie_id}"
-        params = {"api_key": tmdb_api_key, "language": "zh-CN"}
+        params = {"api_key": tmdb_api_key, "language": "en-US"}
 
         response = requests.get(tmdb_url, params=params)
         response.raise_for_status()

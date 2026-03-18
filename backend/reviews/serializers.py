@@ -235,6 +235,7 @@ class WatchlistSerializer(serializers.ModelSerializer):
                 return {
                     "id": obj.tmdb_movie_id,
                     "title": obj.movie_title or tmdb_data.get("title", "未知电影"),
+                    "original_title": tmdb_data.get("original_title", ""),
                     "poster_path": obj.movie_poster
                     or (
                         f"https://image.tmdb.org/t/p/w500{tmdb_data.get('poster_path', '')}"
@@ -250,6 +251,7 @@ class WatchlistSerializer(serializers.ModelSerializer):
                 return {
                     "id": obj.tmdb_movie_id,
                     "title": obj.movie_title or "未知电影",
+                    "original_title": "",
                     "poster_path": obj.movie_poster,
                     "release_date": None,
                     "vote_average": None,

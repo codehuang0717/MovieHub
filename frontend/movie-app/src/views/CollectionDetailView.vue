@@ -90,8 +90,10 @@
                 {{ movie.vote_average?.toFixed(1) }}
               </div>
             </div>
-            <div class="movie-info">
-              <h3 class="movie-title">{{ movie.title }}</h3>
+              <div class="movie-info">
+              <h3 class="movie-title">
+                {{ $i18n.locale === 'en' ? (movie.original_title || movie.title) : movie.title }}
+              </h3>
               <p class="movie-date">
                 {{ formatDate(movie.release_date) }}
               </p>

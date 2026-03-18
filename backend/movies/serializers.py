@@ -25,6 +25,7 @@ class MovieListSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "title",
+            "original_title",
             "poster",
             "poster_path",
             "release_date",

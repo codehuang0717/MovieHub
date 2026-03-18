@@ -176,7 +176,12 @@ const getMovieId = (item: any) => {
 }
 
 const getMovieTitle = (item: any) => {
-  return item.movie_title || item.movie_info?.title || '未知电影'
+  const { locale } = useI18n()
+  const title = item.movie_title || item.movie_info?.title || '未知电影'
+  const originalTitle = item.movie_info?.original_title
+
+  // 如果当前是英文环境，且有原标题，则使用原标题
+  return (locale.value === 'en' && originalTitle) ? originalTitle : title
 }
 
 const getMoviePoster = (item: any) => {
